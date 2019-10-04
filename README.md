@@ -61,7 +61,9 @@ This module has a few dependencies:
 
 
 
+
 ## Examples
+
 
 **IMPORTANT:** Since the `master` branch used in `source` varies based on new modifications, we suggest that you use the release versions [here](https://github.com/clouddrove/terraform-aws-alb/releases).
 
@@ -93,6 +95,9 @@ Here is an example of how you can use this module in your inventory structure:
 
 
 
+
+
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -116,6 +121,7 @@ Here is an example of how you can use this module in your inventory structure:
 | health_check_timeout | The amount of time to wait in seconds before failing a health check request. | number | `10` | no |
 | health_check_unhealthy_threshold | The number of consecutive health check failures required before considering the target unhealthy. | number | `2` | no |
 | http_enabled | A boolean flag to enable/disable HTTP listener. | bool | `true` | no |
+| http_listener_type | The type of routing action. Valid values are forward, redirect, fixed-response, authenticate-cognito and authenticate-oidc. | string | `redirect` | no |
 | http_port | The port on which the load balancer is listening. like 80 or 443. | number | `80` | no |
 | https_enabled | A boolean flag to enable/disable HTTPS listener. | bool | `true` | no |
 | https_port | The port on which the load balancer is listening. like 80 or 443. | number | - | yes |
@@ -135,6 +141,7 @@ Here is an example of how you can use this module in your inventory structure:
 | log_bucket_name | S3 bucket (externally created) for storing load balancer access logs. Required if logging_enabled is true. | string | `` | no |
 | name | Name  (e.g. `app` or `cluster`). | string | `` | no |
 | security_groups | A list of security group IDs to assign to the LB. Only valid for Load Balancers of type application. | list | `<list>` | no |
+| status_code | The HTTP redirect code. The redirect is either permanent (HTTP_301) or temporary (HTTP_302). | string | `HTTP_301` | no |
 | subnet_id | The id of the subnet of which to attach to the load balancer. You can specify only one subnet per Availability Zone. | string | `` | no |
 | subnets | A list of subnet IDs to attach to the LB. Subnets cannot be updated for Load Balancers of type network. Changing this value will for load balancers of type network will force a recreation of the resource. | list | `<list>` | no |
 | tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | map | `<map>` | no |
@@ -161,8 +168,8 @@ Here is an example of how you can use this module in your inventory structure:
 
 
 
-## Testing
 
+## Testing
 In this module testing is performed with [terratest](https://github.com/gruntwork-io/terratest) and it creates a small piece of infrastructure, matches the output like ARN, ID and Tags name etc and destroy infrastructure in your AWS account. This testing is written in GO, so you need a [GO environment](https://golang.org/doc/install) in your system.
 
 You need to run the following command in the testing folder:

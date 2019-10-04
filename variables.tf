@@ -274,3 +274,15 @@ variable "health_check_matcher" {
   default     = "200-399"
   description = "The HTTP response codes to indicate a healthy check."
 }
+
+variable "http_listener_type" {
+  type        = string
+  default     = "redirect"
+  description = "The type of routing action. Valid values are forward, redirect, fixed-response, authenticate-cognito and authenticate-oidc."
+}
+
+variable "status_code" {
+  type        = string
+  default     = "HTTP_301"
+  description = " The HTTP redirect code. The redirect is either permanent (HTTP_301) or temporary (HTTP_302)."
+}

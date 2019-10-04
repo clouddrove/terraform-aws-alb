@@ -68,7 +68,12 @@ resource "aws_lb_listener" "http" {
   protocol          = "HTTP"
   default_action {
     target_group_arn = aws_lb_target_group.main.arn
-    type             = var.listener_type
+    type             = var.http_listener_type
+    redirect {
+      port        = var.https_port
+      protocol    = var.listener_protocol
+      status_code = var.status_code
+    }
   }
 }
 
