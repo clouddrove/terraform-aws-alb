@@ -72,7 +72,7 @@ This module has a few dependencies:
 Here is an example of how you can use this module in your inventory structure:
 ```hcl
   module "alb" {
-    source                     = "git::https://github.com/clouddrove/terraform-aws-alb.git"
+    source                     = "git::https://github.com/clouddrove/terraform-aws-alb.git?ref=tags/0.12.2"
     name                       = "alb"
     application                = "clouddrove"
     environment                = "test"
