@@ -35,24 +35,26 @@ usage : |-
   ### Simple Example
   Here is an example of how you can use this module in your inventory structure:
   ```hcl
-    module "alb" {
-      source                     = "git::https://github.com/clouddrove/terraform-aws-alb.git"
-      name                       = "alb"
-      application                = "clouddrove"
-      environment                = "test"
-      label_order                = ["environment", "name", "application"]
-      internal                   = false
-      load_balancer_type         = "application"
-      instance_count             = 2
-      security_groups            = ["sg-xxxxxxx"]
-      subnets                    = "subnet-xxxxxxx"
-      enable_deletion_protection = false
-      target_id                  = "i-xxxxxxxxxx"
-      vpc_id                     = "vpc-xxxxxxxxx"
-      target_group_protocol      = "HTTP"
-      target_group_port          = 80
-      listener_certificate_arn   = "arn:aws:acm:eu-west-1:xxxxxxxxxxxx:certificate/xxxxxx-xxxx-xxxxx-xxxx"
-      https_enabled              = true
-      http_enabled               = true
-  }
+      module "alb" {
+        source                     = "git::https://github.com/clouddrove/terraform-aws-alb.git?ref=tags/0.12.3"
+        name                       = "alb"
+        application                = "clouddrove"
+        environment                = "test"
+        label_order                = ["environment", "name", "application"]
+        internal                   = false
+        load_balancer_type         = "application"
+        instance_count             = 2
+        security_groups            = ["sg-xxxxxxx"]
+        subnets                    = "subnet-xxxxxxx"
+        enable_deletion_protection = false
+        target_id                  = "i-xxxxxxxxxx"
+        vpc_id                     = "vpc-xxxxxxxxx"
+        target_group_protocol      = "HTTP"
+        target_group_port          = 80
+        listener_certificate_arn   = "arn:aws:acm:eu-west-1:xxxxxxxxxxxx:certificate/xxxxxx-xxxx-xxxxx-xxxx"
+        https_enabled              = true
+        http_enabled               = true
+        https_port               = 443
+        listener_type            = "forward"
+    }
   ```
