@@ -72,7 +72,8 @@ This module has a few dependencies:
 Here is an example of how you can use this module in your inventory structure:
 ```hcl
   module "alb" {
-    source                     = "git::https://github.com/clouddrove/terraform-aws-alb.git?ref=tags/0.12.2"
+    source                     = "git::https://github.com/clouddrove/terraform-aws-alb.git?ref=tags/0.12.3"
+
     name                       = "alb"
     application                = "clouddrove"
     environment                = "test"
@@ -90,6 +91,8 @@ Here is an example of how you can use this module in your inventory structure:
     listener_certificate_arn   = "arn:aws:acm:eu-west-1:xxxxxxxxxxxx:certificate/xxxxxx-xxxx-xxxxx-xxxx"
     https_enabled              = true
     http_enabled               = true
+    https_port               = 443
+    listener_type            = "forward"
 }
 ```
 
