@@ -3,7 +3,6 @@ provider "aws" {
 }
 
 
-
 module "vpc" {
   source = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=tags/0.12.4"
 

@@ -73,6 +73,7 @@ Here is an example of how you can use this module in your inventory structure:
 ```hcl
   module "alb" {
     source                     = "git::https://github.com/clouddrove/terraform-aws-alb.git?ref=tags/0.12.3"
+
     name                       = "alb"
     application                = "clouddrove"
     environment                = "test"
