@@ -6,7 +6,7 @@ output "name" {
 }
 
 output "arn" {
-  value       = join("", aws_lb.main.*.arn)
+  value       = join("", concat(aws_lb.main.*.arn))
   description = "The ARN of the ALB."
 }
 
