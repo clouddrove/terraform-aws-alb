@@ -25,10 +25,10 @@ func Test(t *testing.T) {
 	defer terraform.Destroy(t, terraformOptions)
 
 	// To get the value of an output variable, run 'terraform output'
-	Arn := terraform.Output(t, terraformOptions, "arn")
+	// Arn := terraform.Output(t, terraformOptions, "arn")
 	Tags := terraform.OutputMap(t, terraformOptions, "tags")
 
 	// Check that we get back the outputs that we expect
 	assert.Equal(t, "test-clouddrove-alb", Tags["Name"])
-	assert.Contains(t, Arn, "arn:aws:elasticloadbalancing")
+	// assert.Contains(t, Arn, "arn:aws:elasticloadbalancing")
 }
