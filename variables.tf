@@ -286,3 +286,9 @@ variable "status_code" {
   default     = "HTTP_301"
   description = " The HTTP redirect code. The redirect is either permanent (HTTP_301) or temporary (HTTP_302)."
 }
+
+variable "enable" {
+  type        = bool
+  default     = true
+  description = "If true, create alb."
+}

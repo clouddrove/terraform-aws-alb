@@ -18,6 +18,7 @@ module "labels" {
 # Module      : APPLICATION LOAD BALANCER
 # Description : This terraform module is used to create ALB on AWS.
 resource "aws_lb" "main" {
+  count                            = var.enable ? 1 : 0
   name                             = module.labels.id
   internal                         = var.internal
   load_balancer_type               = var.load_balancer_type
@@ -45,15 +46,15 @@ resource "aws_lb" "main" {
 # Module      : LOAD BALANCER LISTENER HTTPS
 # Description : Provides a Load Balancer Listener resource.
 resource "aws_lb_listener" "https" {
-  count = var.https_enabled == true ? 1 : 0
+  count = var.enable == true && var.https_enabled == true ? 1 : 0
 
-  load_balancer_arn = aws_lb.main.arn
+  load_balancer_arn = element(aws_lb.main.*.arn, count.index)
   port              = var.https_port
   protocol          = var.listener_protocol
   ssl_policy        = var.listener_ssl_policy
   certificate_arn   = var.listener_certificate_arn
   default_action {
-    target_group_arn = aws_lb_target_group.main.arn
+    target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
     type             = var.listener_type
   }
 }
@@ -61,13 +62,13 @@ resource "aws_lb_listener" "https" {
 # Module      : LOAD BALANCER LISTENER HTTP
 # Description : Provides a Load Balancer Listener resource.
 resource "aws_lb_listener" "http" {
-  count = var.http_enabled == true ? 1 : 0
+  count = var.enable == true && var.http_enabled == true ? 1 : 0
 
-  load_balancer_arn = aws_lb.main.arn
+  load_balancer_arn = element(aws_lb.main.*.arn, count.index)
   port              = var.http_port
   protocol          = "HTTP"
   default_action {
-    target_group_arn = aws_lb_target_group.main.arn
+    target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
     type             = var.http_listener_type
     redirect {
       port        = var.https_port
@@ -80,6 +81,7 @@ resource "aws_lb_listener" "http" {
 # Module      : LOAD BALANCER TARGET GROUP
 # Description : Provides a Target Group resource for use with Load Balancer resources.
 resource "aws_lb_target_group" "main" {
+  count                = var.enable ? 1 : 0
   name                 = module.labels.id
   port                 = var.target_group_port
   protocol             = var.target_group_protocol
@@ -100,9 +102,9 @@ resource "aws_lb_target_group" "main" {
 # Description : Provides the ability to register instances and containers with an
 #               Application Load Balancer (ALB) or Network Load Balancer (NLB) target group.
 resource "aws_lb_target_group_attachment" "attachment" {
-  count = var.instance_count
+  count = var.enable ? var.instance_count : 0
 
-  target_group_arn = aws_lb_target_group.main.arn
+  target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
   target_id        = element(var.target_id, count.index)
   port             = var.target_group_port
 }
