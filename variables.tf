@@ -50,11 +50,6 @@ variable "managedby" {
 
 # Module      : ALB
 # Description : Terraform ALB module variables.
-variable "alb_name" {
-  type        = string
-  default     = ""
-  description = "The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified, Terraform will autogenerate a name beginning with tf-lb."
-}
 
 variable "instance_count" {
   type        = number
@@ -72,6 +67,36 @@ variable "load_balancer_type" {
   type        = string
   default     = ""
   description = "The type of load balancer to create. Possible values are application or network. The default value is application."
+}
+
+variable "drop_invalid_header_fields" {
+  type        = bool
+  default     = false
+  description = "Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type application."
+}
+
+variable "subnet_mapping" {
+  default     = []
+  type        = list(map(string))
+  description = "A list of subnet mapping blocks describing subnets to attach to network load balancer"
+}
+
+variable "https_listeners" {
+  description = "A list of maps describing the HTTPS listeners for this ALB. Required key/values: port, certificate_arn. Optional key/values: ssl_policy (defaults to ELBSecurityPolicy-2016-08), target_group_index (defaults to 0)"
+  type        = list(map(string))
+  default     = []
+}
+
+variable "http_tcp_listeners" {
+  description = "A list of maps describing the HTTP listeners for this ALB. Required key/values: port, protocol. Optional key/values: target_group_index (defaults to 0)"
+  type        = list(map(string))
+  default     = []
+}
+
+variable "target_groups" {
+  description = "A list of maps containing key/value pairs that define the target groups to be created. Order of these maps is important and the index of these are to be referenced in listener definitions. Required key/values: name, backend_protocol, backend_port. Optional key/values are in the target_groups_defaults variable."
+  type        = any
+  default     = []
 }
 
 variable "security_groups" {
@@ -104,14 +129,9 @@ variable "allocation_id" {
   description = "The allocation ID of the Elastic IP address."
 }
 
-variable "alb_environment" {
-  type        = string
-  default     = ""
-  description = "A mapping of tags to assign to the resource."
-}
-
 variable "https_port" {
   type        = number
+  default     = 443
   description = "The port on which the load balancer is listening. like 80 or 443."
 }
 
@@ -141,6 +161,7 @@ variable "http_enabled" {
 
 variable "listener_type" {
   type        = string
+  default     = "forward"
   description = "The type of routing action. Valid values are forward, redirect, fixed-response, authenticate-cognito and authenticate-oidc."
 }
 
@@ -158,14 +179,8 @@ variable "listener_certificate_arn" {
 
 variable "target_group_port" {
   type        = string
-  default     = ""
+  default     = 80
   description = "The port on which targets receive traffic, unless overridden when registering a specific target."
-}
-
-variable "target_group_protocol" {
-  type        = string
-  default     = ""
-  description = "The protocol to use for routing traffic to the targets."
 }
 
 variable "vpc_id" {
@@ -231,54 +246,6 @@ variable "access_logs" {
   type        = bool
   default     = false
   description = "Access logs Enable or Disable."
-}
-
-variable "target_type" {
-  type        = string
-  default     = "instance"
-  description = "The type of target that you must specify when registering targets with this target group. The possible values are instance (targets are specified by instance ID) or ip (targets are specified by IP address) or lambda (targets are specified by lambda arn). The default is instance."
-}
-
-variable "deregistration_delay" {
-  type        = number
-  default     = 300
-  description = "The amount time for Elastic Load Balancing to wait before changing the state of a deregistering target from draining to unused. The range is 0-3600 seconds. The default value is 300 seconds."
-}
-
-variable "health_check_path" {
-  type        = string
-  default     = "/"
-  description = "The destination for the health check request."
-}
-
-variable "health_check_timeout" {
-  type        = number
-  default     = 10
-  description = "The amount of time to wait in seconds before failing a health check request."
-}
-
-variable "health_check_healthy_threshold" {
-  type        = number
-  default     = 2
-  description = "The number of consecutive health checks successes required before considering an unhealthy target healthy."
-}
-
-variable "health_check_unhealthy_threshold" {
-  type        = number
-  default     = 2
-  description = "The number of consecutive health check failures required before considering the target unhealthy."
-}
-
-variable "health_check_interval" {
-  type        = number
-  default     = 15
-  description = "The duration in seconds in between health checks."
-}
-
-variable "health_check_matcher" {
-  type        = string
-  default     = "200-399"
-  description = "The HTTP response codes to indicate a healthy check."
 }
 
 variable "http_listener_type" {

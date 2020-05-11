@@ -32,29 +32,94 @@ include:
 
 # How to use this project
 usage : |-
-  ### Simple Example
-  Here is an example of how you can use this module in your inventory structure:
+  Here are examples of how you can use this module in your inventory structure:
+  ### alb Example
   ```hcl
-      module "alb" {
-        source                     = "git::https://github.com/clouddrove/terraform-aws-alb.git?ref=tags/0.12.5"
-        name                       = "alb"
-        application                = "clouddrove"
-        environment                = "test"
-        label_order                = ["environment", "name", "application"]
-        internal                   = false
-        load_balancer_type         = "application"
-        instance_count             = 2
-        security_groups            = ["sg-xxxxxxx"]
-        subnets                    = "subnet-xxxxxxx"
-        enable_deletion_protection = false
-        target_id                  = "i-xxxxxxxxxx"
-        vpc_id                     = "vpc-xxxxxxxxx"
-        target_group_protocol      = "HTTP"
-        target_group_port          = 80
-        listener_certificate_arn   = "arn:aws:acm:eu-west-1:xxxxxxxxxxxx:certificate/xxxxxx-xxxx-xxxxx-xxxx"
-        https_enabled              = true
-        http_enabled               = true
-        https_port               = 443
-        listener_type            = "forward"
+    module "alb" {
+      source                     = "git::https://github.com/clouddrove/terraform-aws-alb.git?ref=tags/0.12.6"
+      name                       = "alb"
+      application                = "clouddrove"
+      environment                = "test"
+      label_order                = ["environment", "application", "name"]
+      internal                   = false
+      load_balancer_type         = "application"
+      instance_count             = module.ec2.instance_count
+      security_groups            = [module.ssh.security_group_ids, module.http-https.security_group_ids]
+      subnets                    = module.public_subnets.public_subnet_id
+      enable_deletion_protection = false
+      target_id                  = module.ec2.instance_id
+      vpc_id                     = module.vpc.vpc_id
+      https_enabled              = true
+      http_enabled               = true
+      https_port                 = 443
+      listener_type              = "forward"
+      listener_certificate_arn   = "arn:aws:acm:eu-west-1:924144197303:certificate/0418d2ba-91f7-4196-991b-28b5c60cd4cf"
+      target_group_port          = 80
+      target_groups  = [
+        {
+          backend_protocol     = "HTTP"
+          backend_port         = 80
+          target_type          = "instance"
+          deregistration_delay = 300
+          health_check = {
+            enabled             = true
+            interval            = 30
+            path                = "/"
+            port                = "traffic-port"
+            healthy_threshold   = 3
+            unhealthy_threshold = 3
+            timeout             = 10
+            protocol            = "HTTP"
+            matcher             = "200-399"
+          }
+        }
+      ]
+    }
+  ```
+
+  ### nlb Example
+  ```hcl
+    module "alb" {
+      source                     = "git::https://github.com/clouddrove/terraform-aws-alb.git?ref=tags/0.12.6"
+      name                       = "nlb"
+      application                = "clouddrove"
+      environment                = "test"
+      label_order                = ["environment", "application", "name"]
+      internal                   = false
+      load_balancer_type         = "application"
+      instance_count             = module.ec2.instance_count
+      subnets                    = module.public_subnets.public_subnet_id
+      enable_deletion_protection = false
+      target_id                  = module.ec2.instance_id
+      vpc_id                     = module.vpc.vpc_id
+      http_tcp_listeners = [
+        {
+          port               = 80
+          protocol           = "TCP"
+          target_group_index = 0
+        },
+      ]
+
+      https_listeners = [
+        {
+          port               = 443
+          protocol           = "TLS"
+          certificate_arn    = "arn:aws:acm:eu-west-1:924144197303:certificate/0418d2ba-91f7-4196-991b-28b5c60cd4cf"
+          target_group_index = 1
+        },
+      ]
+
+      target_groups = [
+        {
+          backend_protocol = "TCP"
+          backend_port     = 80
+          target_type      = "instance"
+        },
+        {
+          backend_protocol = "TLS"
+          backend_port     = 443
+          target_type      = "instance"
+        },
+      ]
     }
   ```

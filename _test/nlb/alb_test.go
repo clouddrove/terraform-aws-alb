@@ -15,7 +15,7 @@ func Test(t *testing.T) {
 
 	terraformOptions := &terraform.Options{
 		// Source path of Terraform directory.
-		TerraformDir: "../_example",
+		TerraformDir: "../../_example/nlb",
 	}
 
 	// This will run 'terraform init' and 'terraform application' and will fail the test if any errors occur
@@ -29,6 +29,6 @@ func Test(t *testing.T) {
 	Tags := terraform.OutputMap(t, terraformOptions, "tags")
 
 	// Check that we get back the outputs that we expect
-	assert.Equal(t, "test-clouddrove-alb", Tags["Name"])
+	assert.Equal(t, "test-clouddrove-nlb", Tags["Name"])
 	assert.Contains(t, Arn, "arn:aws:elasticloadbalancing")
 }
