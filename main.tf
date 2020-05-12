@@ -109,4 +109,3 @@ resource "aws_lb_target_group_attachment" "attachment" {
   target_id        = element(var.target_id, count.index)
   port             = var.target_group_port
 }
-

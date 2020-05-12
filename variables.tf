@@ -112,6 +112,7 @@ variable "alb_environment" {
 
 variable "https_port" {
   type        = number
+  default     = 443
   description = "The port on which the load balancer is listening. like 80 or 443."
 }
 
@@ -129,18 +130,19 @@ variable "http_port" {
 
 variable "https_enabled" {
   type        = bool
-  default     = true
+  default     = false
   description = "A boolean flag to enable/disable HTTPS listener."
 }
 
 variable "http_enabled" {
   type        = bool
-  default     = true
+  default     = false
   description = "A boolean flag to enable/disable HTTP listener."
 }
 
 variable "listener_type" {
   type        = string
+  default     = ""
   description = "The type of routing action. Valid values are forward, redirect, fixed-response, authenticate-cognito and authenticate-oidc."
 }
 
@@ -176,6 +178,7 @@ variable "vpc_id" {
 
 variable "target_id" {
   type        = list
+  default     = []
   description = "The ID of the target. This is the Instance ID for an instance, or the container ID for an ECS container. If the target type is ip, specify an IP address."
 }
 
