@@ -16,11 +16,11 @@ jobs:
         with:
           actions_subcommand: 'fmt'
 
-      - name: 'Terraform Init'
+      - name: 'ALB Terraform Init'
         uses: clouddrove/github-actions@v2.0
         with:
           actions_subcommand: 'init'
-          tf_actions_working_dir: ./_example
+          tf_actions_working_dir: ./_example/alb
 
       - name: Configure AWS Credentials
         uses: clouddrove/configure-aws-credentials@v1
@@ -29,19 +29,41 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
 
-      - name: 'Terraform Plan'
+      - name: 'ALB Terraform Plan'
         uses: clouddrove/github-actions@v2.0
         with:
           actions_subcommand: 'plan'
-          tf_actions_working_dir: ./_example
+          tf_actions_working_dir: ./_example/alb
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 'Terratest'
+      - name: 'ALB Terratest'
         uses: clouddrove/github-actions@v2.0
         with:
           actions_subcommand: 'terratest'
-          tf_actions_working_dir: ./_test
+          tf_actions_working_dir: ./_test/alb
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 'CLB Terraform Init'
+        uses: clouddrove/github-actions@v2.0
+        with:
+          actions_subcommand: 'init'
+          tf_actions_working_dir: ./_example/clb
+
+      - name: 'CLB Terraform Plan'
+        uses: clouddrove/github-actions@v2.0
+        with:
+          actions_subcommand: 'plan'
+          tf_actions_working_dir: ./_example/clb
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 'CLB Terratest'
+        uses: clouddrove/github-actions@v2.0
+        with:
+          actions_subcommand: 'terratest'
+          tf_actions_working_dir: ./_test/clb
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

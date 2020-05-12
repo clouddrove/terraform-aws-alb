@@ -2,7 +2,6 @@ provider "aws" {
   region = "eu-west-1"
 }
 
-
 module "vpc" {
   source = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=tags/0.12.4"
 
@@ -95,12 +94,11 @@ data "aws_iam_policy_document" "iam-policy" {
 module "ec2" {
   source = "git::https://github.com/clouddrove/terraform-aws-ec2.git?ref=tags/0.12.4"
 
-  name        = "ec2-instance"
-  application = "clouddrove"
-  environment = "test"
-  label_order = ["environment", "application", "name"]
-
-  instance_count = 2
+  name           = "ec2-instance"
+  application    = "clouddrove"
+  environment    = "test"
+  label_order    = ["environment", "application", "name"]
+  instance_count = 1
   ami            = "ami-08d658f84a6d84a80"
   instance_type  = "t2.nano"
   monitoring     = false
@@ -123,29 +121,52 @@ module "ec2" {
 }
 
 
-module "alb" {
-  source = "./../"
+module "nlb" {
+  source = "./../../"
 
-  name        = "alb"
+  name        = "nlb"
   application = "clouddrove"
   environment = "test"
   label_order = ["environment", "application", "name"]
 
+  enable                     = true
   internal                   = false
-  load_balancer_type         = "application"
+  load_balancer_type         = "network"
   instance_count             = module.ec2.instance_count
-  security_groups            = [module.ssh.security_group_ids, module.http-https.security_group_ids]
   subnets                    = module.public_subnets.public_subnet_id
   enable_deletion_protection = false
 
-  target_id             = module.ec2.instance_id
-  vpc_id                = module.vpc.vpc_id
-  target_group_protocol = "HTTP"
-  target_group_port     = 80
+  target_id = module.ec2.instance_id
+  vpc_id    = module.vpc.vpc_id
 
-  https_enabled = false
-  http_enabled  = true
-  https_port    = 443
-  listener_type = "forward"
+  http_tcp_listeners = [
+    {
+      port               = 80
+      protocol           = "TCP"
+      target_group_index = 0
+    },
+  ]
 
+  // TLS
+  https_listeners = [
+    {
+      port               = 443
+      protocol           = "TLS"
+      certificate_arn    = "arn:aws:acm:eu-west-1:924144197303:certificate/0418d2ba-91f7-4196-991b-28b5c60cd4cf"
+      target_group_index = 1
+    },
+  ]
+
+  target_groups = [
+    {
+      backend_protocol = "TCP"
+      backend_port     = 80
+      target_type      = "instance"
+    },
+    {
+      backend_protocol = "TLS"
+      backend_port     = 443
+      target_type      = "instance"
+    },
+  ]
 }
