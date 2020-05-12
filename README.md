@@ -163,7 +163,7 @@ Here are examples of how you can use this module in your inventory structure:
 ### CLB Example
 ```hcl
   module "clb" {
-  source = "./../../"
+  source = "git::https://github.com/clouddrove/terraform-aws-alb.git?ref=tags/0.12.6"
 
   name            = "clb"
   application     = "clouddrove"
