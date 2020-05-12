@@ -181,7 +181,7 @@ resource "aws_lb_target_group_attachment" "nattachment" {
 # Module      : Classic LOAD BALANCER
 # Description : This terraform module is used to create classic Load Balancer on AWS.
 resource "aws_elb" "main" {
-  count = var.enable && var.load_balancer_type == "classic" == true ? 1 : 0
+  count = var.clb_enable && var.load_balancer_type == "classic" == true ? 1 : 0
 
   name                        = module.labels.id
   instances                   = var.target_id

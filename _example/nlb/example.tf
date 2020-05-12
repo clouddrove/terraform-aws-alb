@@ -129,6 +129,7 @@ module "nlb" {
   environment = "test"
   label_order = ["environment", "application", "name"]
 
+  enable                     = true
   internal                   = false
   load_balancer_type         = "network"
   instance_count             = module.ec2.instance_count

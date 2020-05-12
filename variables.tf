@@ -112,8 +112,8 @@ variable "subnets" {
 }
 
 variable "enable_deletion_protection" {
-  type        = string
-  default     = ""
+  type        = bool
+  default     = false
   description = "If true, deletion of the load balancer will be disabled via the AWS API. This will prevent Terraform from deleting the load balancer. Defaults to false."
 }
 
@@ -262,11 +262,18 @@ variable "status_code" {
 
 variable "enable" {
   type        = bool
-  default     = true
+  default     = false
   description = "If true, create alb."
 }
 
+variable "clb_enable" {
+  type        = bool
+  default     = false
+  description = "If true, create clb."
+}
+
 variable "listeners" {
+  default = []
   type = list(object({
     lb_port : number
     lb_protocol : string
@@ -274,7 +281,6 @@ variable "listeners" {
     instance_protocol : string
     ssl_certificate_id : string
   }))
-  default     = list(map(string))
   description = "A list of listener configurations for the ELB."
 }
 

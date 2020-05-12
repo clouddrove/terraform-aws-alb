@@ -130,6 +130,7 @@ module "clb" {
   label_order = ["environment", "application", "name"]
 
   load_balancer_type = "classic"
+  clb_enable         = true
   internal           = false
   target_id          = module.ec2.instance_id
   security_groups    = [module.ssh.security_group_ids, module.http_https.security_group_ids]
