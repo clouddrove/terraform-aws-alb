@@ -274,6 +274,7 @@ variable "listeners" {
     instance_protocol : string
     ssl_certificate_id : string
   }))
+  default     = list(map(string))
   description = "A list of listener configurations for the ELB."
 }
 
