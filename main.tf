@@ -176,3 +176,41 @@ resource "aws_lb_target_group_attachment" "nattachment" {
   target_id        = element(var.target_id, 0)
   port             = lookup(var.target_groups[count.index], "backend_port", null)
 }
+
+
+# Module      : Classic LOAD BALANCER
+# Description : This terraform module is used to create classic Load Balancer on AWS.
+resource "aws_elb" "main" {
+  count = var.enable && var.load_balancer_type == "classic" == true ? 1 : 0
+
+  name                        = module.labels.id
+  instances                   = var.target_id
+  internal                    = var.internal
+  cross_zone_load_balancing   = var.enable_cross_zone_load_balancing
+  idle_timeout                = var.idle_timeout
+  connection_draining         = var.connection_draining
+  connection_draining_timeout = var.connection_draining_timeout
+  security_groups             = var.security_groups
+  subnets                     = var.subnets
+
+  dynamic "listener" {
+    for_each = var.listeners
+    content {
+      instance_port      = listener.value.instance_port
+      instance_protocol  = listener.value.instance_protocol
+      lb_port            = listener.value.lb_port
+      lb_protocol        = listener.value.lb_protocol
+      ssl_certificate_id = listener.value.ssl_certificate_id
+    }
+  }
+
+  health_check {
+    target              = var.health_check_target
+    timeout             = var.health_check_timeout
+    interval            = var.health_check_interval
+    unhealthy_threshold = var.health_check_unhealthy_threshold
+    healthy_threshold   = var.health_check_healthy_threshold
+  }
+
+  tags = module.labels.tags
+}

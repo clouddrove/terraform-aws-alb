@@ -121,49 +121,40 @@ module "ec2" {
   ebs_volume_size    = 30
 }
 
-
-module "alb" {
+module "clb" {
   source = "./../../"
 
-  name        = "alb"
+  name        = "clb"
   application = "clouddrove"
   environment = "test"
   label_order = ["environment", "application", "name"]
 
-  internal                   = false
-  load_balancer_type         = "application"
-  instance_count             = module.ec2.instance_count
-  security_groups            = [module.ssh.security_group_ids, module.http_https.security_group_ids]
-  subnets                    = module.public_subnets.public_subnet_id
-  enable_deletion_protection = false
+  load_balancer_type = "classic"
+  internal           = false
+  target_id          = module.ec2.instance_id
+  security_groups    = [module.ssh.security_group_ids, module.http_https.security_group_ids]
+  subnets            = module.public_subnets.public_subnet_id
 
-  target_id = module.ec2.instance_id
-  vpc_id    = module.vpc.vpc_id
-
-  https_enabled            = true
-  http_enabled             = true
-  https_port               = 443
-  listener_type            = "forward"
-  listener_certificate_arn = "arn:aws:acm:eu-west-1:924144197303:certificate/0418d2ba-91f7-4196-991b-28b5c60cd4cf"
-  target_group_port        = 80
-
-  target_groups = [
+  listeners = [
     {
-      backend_protocol     = "HTTP"
-      backend_port         = 80
-      target_type          = "instance"
-      deregistration_delay = 300
-      health_check = {
-        enabled             = true
-        interval            = 30
-        path                = "/"
-        port                = "traffic-port"
-        healthy_threshold   = 3
-        unhealthy_threshold = 3
-        timeout             = 10
-        protocol            = "HTTP"
-        matcher             = "200-399"
-      }
+      lb_port            = 22000
+      lb_protocol        = "TCP"
+      instance_port      = 22000
+      instance_protocol  = "TCP"
+      ssl_certificate_id = null
+    },
+    {
+      lb_port            = 4444
+      lb_protocol        = "TCP"
+      instance_port      = 4444
+      instance_protocol  = "TCP"
+      ssl_certificate_id = null
     }
   ]
+
+  health_check_target              = "TCP:4444"
+  health_check_timeout             = 10
+  health_check_interval            = 30
+  health_check_unhealthy_threshold = 5
+  health_check_healthy_threshold   = 5
 }

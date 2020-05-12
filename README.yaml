@@ -33,7 +33,7 @@ include:
 # How to use this project
 usage : |-
   Here are examples of how you can use this module in your inventory structure:
-  ### alb Example
+  ### ALB Example
   ```hcl
     module "alb" {
       source                     = "git::https://github.com/clouddrove/terraform-aws-alb.git?ref=tags/0.12.6"
@@ -77,7 +77,7 @@ usage : |-
     }
   ```
 
-  ### nlb Example
+  ### NLB Example
   ```hcl
     module "alb" {
       source                     = "git::https://github.com/clouddrove/terraform-aws-alb.git?ref=tags/0.12.6"
@@ -122,4 +122,45 @@ usage : |-
         },
       ]
     }
+  ```
+
+  ### CLB Example
+  ```hcl
+    module "clb" {
+    source = "./../../"
+
+    name            = "clb"
+    application     = "clouddrove"
+    environment     = "test"
+    label_order     = ["environment", "application", "name"]
+
+    load_balancer_type = "classic"
+    internal        = false
+    target_id       = module.ec2.instance_id
+    security_groups = [module.ssh.security_group_ids, module.http_https.security_group_ids]
+    subnets         = module.public_subnets.public_subnet_id
+
+    listeners = [
+    {
+    lb_port            = 22000
+    lb_protocol        = "TCP"
+    instance_port      = 22000
+    instance_protocol  = "TCP"
+    ssl_certificate_id = null
+    },
+    {
+    lb_port            = 4444
+    lb_protocol        = "TCP"
+    instance_port      = 4444
+    instance_protocol  = "TCP"
+    ssl_certificate_id = null
+    }
+    ]
+
+    health_check_target              = "TCP:4444"
+    health_check_timeout             = 10
+    health_check_interval            = 30
+    health_check_unhealthy_threshold = 5
+    health_check_healthy_threshold   = 5
+  }
   ```

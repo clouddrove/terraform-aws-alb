@@ -10,6 +10,10 @@ output "arn" {
   description = "The ARN of the ALB."
 }
 
+output "clb_arn" {
+  value       = join("", concat(aws_elb.main.*.arn))
+  description = "The ARN of the CLB."
+}
 output "arn_suffix" {
   value       = join("", aws_lb.main.*.arn_suffix)
   description = "The ARN suffix of the ALB."
@@ -20,11 +24,19 @@ output "dns_name" {
   description = "DNS name of ALB."
 }
 
+output "clb_name" {
+  value       = join("", aws_elb.main.*.dns_name)
+  description = "DNS name of CLB."
+}
 output "zone_id" {
   value       = join("", aws_lb.main.*.zone_id)
   description = "The ID of the zone which ALB is provisioned."
 }
 
+output "clb_zone_id" {
+  value       = join("", aws_elb.main.*.zone_id)
+  description = "The ID of the zone which ALB is provisioned."
+}
 output "main_target_group_arn" {
   value       = join("", aws_lb_target_group.main.*.arn)
   description = "The main target group ARN."

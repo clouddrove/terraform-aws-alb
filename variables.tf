@@ -265,3 +265,68 @@ variable "enable" {
   default     = true
   description = "If true, create alb."
 }
+
+variable "listeners" {
+  type = list(object({
+    lb_port : number
+    lb_protocol : string
+    instance_port : number
+    instance_protocol : string
+    ssl_certificate_id : string
+  }))
+  description = "A list of listener configurations for the ELB."
+}
+
+variable "enable_connection_draining" {
+  type        = bool
+  default     = false
+  description = "Whether or not to enable connection draining (\"true\" or \"false\")."
+}
+
+variable "connection_draining_timeout" {
+  type        = number
+  default     = 300
+  description = "The time after which connection draining is aborted in seconds."
+}
+
+variable "connection_draining" {
+  type        = bool
+  default     = false
+  description = "TBoolean to enable connection draining. Default: false."
+}
+
+variable "availability_zones" {
+  default     = []
+  type        = list(map(string))
+  description = "The AZ's to serve traffic in."
+}
+
+variable "health_check_target" {
+  description = "The target to use for health checks."
+  type        = string
+  default     = "TCP:80"
+}
+
+variable "health_check_timeout" {
+  type        = number
+  default     = 5
+  description = "The time after which a health check is considered failed in seconds."
+}
+
+variable "health_check_interval" {
+  description = "The time between health check attempts in seconds."
+  type        = number
+  default     = 30
+}
+
+variable "health_check_unhealthy_threshold" {
+  type        = number
+  default     = 2
+  description = "The number of failed health checks before an instance is taken out of service."
+}
+
+variable "health_check_healthy_threshold" {
+  type        = number
+  default     = 10
+  description = "The number of successful health checks before an instance is put into service."
+}
