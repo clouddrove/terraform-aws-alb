@@ -2,6 +2,14 @@ provider "aws" {
   region = "eu-west-1"
 }
 
+module "keypair" {
+  source = "git::https://github.com/clouddrove/terraform-aws-keypair.git?ref=tags/0.12.2"
+
+  key_path        = "~/.ssh/id_rsa.pub"
+  key_name        = "main-key"
+  enable_key_pair = true
+}
+
 module "vpc" {
   source = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=tags/0.12.5"
 
@@ -14,7 +22,7 @@ module "vpc" {
 }
 
 module "public_subnets" {
-  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=tags/0.12.6"
+  source = "git::https://github.com/aashishgoyal246/terraform-aws-subnet.git?ref=slave"
 
   name        = "public-subnet"
   application = "clouddrove"
@@ -24,12 +32,13 @@ module "public_subnets" {
   availability_zones = ["eu-west-1b", "eu-west-1c"]
   vpc_id             = module.vpc.vpc_id
   cidr_block         = module.vpc.vpc_cidr_block
+  ipv6_cidr_block    = module.vpc.ipv6_cidr_block
   type               = "public"
   igw_id             = module.vpc.igw_id
 }
 
 module "http_https" {
-  source = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=tags/0.12.4"
+  source = "git::https://github.com/aashishgoyal246/terraform-aws-security-group.git?ref=slave"
 
   name        = "http-https"
   application = "clouddrove"
@@ -38,11 +47,12 @@ module "http_https" {
 
   vpc_id        = module.vpc.vpc_id
   allowed_ip    = ["0.0.0.0/0"]
+  allowed_ipv6  = ["2405:201:5e00:3684:cd17:9397:5734:a167/128", module.vpc.ipv6_cidr_block]
   allowed_ports = [80, 443]
 }
 
 module "ssh" {
-  source = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=tags/0.12.4"
+  source = "git::https://github.com/aashishgoyal246/terraform-aws-security-group.git?ref=slave"
 
   name        = "ssh"
   application = "clouddrove"
@@ -50,7 +60,8 @@ module "ssh" {
   label_order = ["environment", "application", "name"]
 
   vpc_id        = module.vpc.vpc_id
-  allowed_ip    = [module.vpc.vpc_cidr_block]
+  allowed_ip    = [module.vpc.vpc_cidr_block, "0.0.0.0/0"]
+  allowed_ipv6  = ["2405:201:5e00:3684:cd17:9397:5734:a167/128", module.vpc.ipv6_cidr_block]
   allowed_ports = [22]
 }
 
@@ -99,9 +110,9 @@ module "ec2" {
   environment = "test"
   label_order = ["environment", "application", "name"]
 
-  instance_count = 2
-  ami            = "ami-08d658f84a6d84a80"
-  instance_type  = "t2.nano"
+  instance_count = 1
+  ami            = "ami-0701e7be9b2a77600"
+  instance_type  = "t2.micro"
   monitoring     = false
   tenancy        = "default"
 
@@ -110,6 +121,8 @@ module "ec2" {
 
   assign_eip_address          = true
   associate_public_ip_address = true
+  ipv6_address_count          = 1
+  key_name                    = module.keypair.name
 
   instance_profile_enabled = true
   iam_instance_profile     = module.iam-role.name
@@ -142,11 +155,13 @@ module "alb" {
   vpc_id    = module.vpc.vpc_id
 
   https_enabled            = true
-  http_enabled             = true
-  https_port               = 443
+  http_enabled             = false
+  https_port               = 80
   listener_type            = "forward"
-  listener_certificate_arn = "arn:aws:acm:eu-west-1:924144197303:certificate/0418d2ba-91f7-4196-991b-28b5c60cd4cf"
+  listener_protocol        = "HTTP"
+  listener_ssl_policy      = ""
   target_group_port        = 80
+  ip_address_type          = "dualstack"
 
   target_groups = [
     {
