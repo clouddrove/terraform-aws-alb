@@ -337,3 +337,9 @@ variable "health_check_healthy_threshold" {
   default     = 10
   description = "The number of successful health checks before an instance is put into service."
 }
+
+variable "target_type" {
+  type        = string
+  default     = ""
+  description = "The type of target that you must specify when registering targets with this target group."
+}
