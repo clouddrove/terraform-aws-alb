@@ -162,7 +162,7 @@ resource "aws_lb_target_group" "main" {
 # Description : Provides the ability to register instances and containers with an
 #               Application Load Balancer (ALB) or Network Load Balancer (NLB) target group.
 resource "aws_lb_target_group_attachment" "attachment" {
-  count = var.enable && var.load_balancer_type == "application" ? var.instance_count : 0
+  count = var.enable && var.load_balancer_type == "application" && var.target_type == "" ? var.instance_count : 0
 
   target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
   target_id        = element(var.target_id, count.index)
@@ -170,7 +170,7 @@ resource "aws_lb_target_group_attachment" "attachment" {
 }
 
 resource "aws_lb_target_group_attachment" "lambda_attachment" {
-  count = var.enable && var.load_balancer_type == "application" && var.target_type == "lambda" ? var.instance_count : 0
+  count = var.enable && var.load_balancer_type == "application" && var.target_type == "lambda" ? 1 : 0
 
   target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
   target_id        = element(var.target_id, count.index)
