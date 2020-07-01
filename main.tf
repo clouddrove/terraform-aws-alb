@@ -169,13 +169,6 @@ resource "aws_lb_target_group_attachment" "attachment" {
   port             = var.target_group_port
 }
 
-resource "aws_lb_target_group_attachment" "lambda_attachment" {
-  count = var.enable && var.load_balancer_type == "application" && var.target_type == "lambda" ? 1 : 0
-
-  target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
-  target_id        = element(var.target_id, count.index)
-}
-
 resource "aws_lb_target_group_attachment" "nattachment" {
   count = var.enable && var.load_balancer_type == "network" ? length(var.https_listeners) : 0
 

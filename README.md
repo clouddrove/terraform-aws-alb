@@ -72,7 +72,7 @@ Here are examples of how you can use this module in your inventory structure:
 ### ALB Example
 ```hcl
   module "alb" {
-    source                     = "git::https://github.com/clouddrove/terraform-aws-alb.git?ref=tags/0.12.6"
+    source                     = "git::https://github.com/clouddrove/terraform-aws-alb.git?ref=tags/0.12.7"
     name                       = "alb"
     application                = "clouddrove"
     environment                = "test"
@@ -116,7 +116,7 @@ Here are examples of how you can use this module in your inventory structure:
 ### NLB Example
 ```hcl
   module "alb" {
-    source                     = "git::https://github.com/clouddrove/terraform-aws-alb.git?ref=tags/0.12.6"
+    source                     = "git::https://github.com/clouddrove/terraform-aws-alb.git?ref=tags/0.12.7"
     name                       = "nlb"
     application                = "clouddrove"
     environment                = "test"
@@ -163,7 +163,7 @@ Here are examples of how you can use this module in your inventory structure:
 ### CLB Example
 ```hcl
   module "clb" {
-  source = "git::https://github.com/clouddrove/terraform-aws-alb.git?ref=tags/0.12.6"
+  source = "git::https://github.com/clouddrove/terraform-aws-alb.git?ref=tags/0.12.7"
 
   name            = "clb"
   application     = "clouddrove"
@@ -210,78 +210,80 @@ Here are examples of how you can use this module in your inventory structure:
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| access_logs | Access logs Enable or Disable. | bool | `false` | no |
-| allocation_id | The allocation ID of the Elastic IP address. | string | `` | no |
-| application | Application (e.g. `cd` or `clouddrove`). | string | `` | no |
-| attributes | Additional attributes (e.g. `1`). | list | `<list>` | no |
-| availability_zones | The AZ's to serve traffic in. | list(map(string)) | `<list>` | no |
-| connection_draining | TBoolean to enable connection draining. Default: false. | bool | `false` | no |
-| connection_draining_timeout | The time after which connection draining is aborted in seconds. | number | `300` | no |
-| delimiter | Delimiter to be used between `organization`, `environment`, `name` and `attributes`. | string | `-` | no |
-| drop_invalid_header_fields | Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type application. | bool | `false` | no |
-| enable | If true, create alb. | bool | `true` | no |
-| enable_connection_draining | Whether or not to enable connection draining ("true" or "false"). | bool | `false` | no |
-| enable_cross_zone_load_balancing | Indicates whether cross zone load balancing should be enabled in application load balancers. | bool | `false` | no |
-| enable_deletion_protection | If true, deletion of the load balancer will be disabled via the AWS API. This will prevent Terraform from deleting the load balancer. Defaults to false. | string | `` | no |
-| enable_http2 | Indicates whether HTTP/2 is enabled in application load balancers. | bool | `true` | no |
-| environment | Environment (e.g. `prod`, `dev`, `staging`). | string | `` | no |
-| health_check_healthy_threshold | The number of successful health checks before an instance is put into service. | number | `10` | no |
-| health_check_interval | The time between health check attempts in seconds. | number | `30` | no |
-| health_check_target | The target to use for health checks. | string | `TCP:80` | no |
-| health_check_timeout | The time after which a health check is considered failed in seconds. | number | `5` | no |
-| health_check_unhealthy_threshold | The number of failed health checks before an instance is taken out of service. | number | `2` | no |
-| http_enabled | A boolean flag to enable/disable HTTP listener. | bool | `true` | no |
-| http_listener_type | The type of routing action. Valid values are forward, redirect, fixed-response, authenticate-cognito and authenticate-oidc. | string | `redirect` | no |
-| http_port | The port on which the load balancer is listening. like 80 or 443. | number | `80` | no |
-| http_tcp_listeners | A list of maps describing the HTTP listeners for this ALB. Required key/values: port, protocol. Optional key/values: target_group_index (defaults to 0) | list(map(string)) | `<list>` | no |
-| https_enabled | A boolean flag to enable/disable HTTPS listener. | bool | `true` | no |
-| https_listeners | A list of maps describing the HTTPS listeners for this ALB. Required key/values: port, certificate_arn. Optional key/values: ssl_policy (defaults to ELBSecurityPolicy-2016-08), target_group_index (defaults to 0) | list(map(string)) | `<list>` | no |
-| https_port | The port on which the load balancer is listening. like 80 or 443. | number | `443` | no |
-| idle_timeout | The time in seconds that the connection is allowed to be idle. | number | `60` | no |
-| instance_count | The count of instances. | number | `0` | no |
-| internal | If true, the LB will be internal. | string | `` | no |
-| ip_address_type | The type of IP addresses used by the subnets for your load balancer. The possible values are ipv4 and dualstack. | string | `ipv4` | no |
-| label_order | Label order, e.g. `name`,`application`. | list | `<list>` | no |
-| listener_certificate_arn | The ARN of the SSL server certificate. Exactly one certificate is required if the protocol is HTTPS. | string | `` | no |
-| listener_protocol | The protocol for connections from clients to the load balancer. Valid values are TCP, HTTP and HTTPS. Defaults to HTTP. | string | `HTTPS` | no |
-| listener_ssl_policy | The security policy if using HTTPS externally on the load balancer. [See](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table.html). | string | `ELBSecurityPolicy-2016-08` | no |
-| listener_type | The type of routing action. Valid values are forward, redirect, fixed-response, authenticate-cognito and authenticate-oidc. | string | `forward` | no |
-| listeners | A list of listener configurations for the ELB. | object | - | yes |
-| load_balancer_create_timeout | Timeout value when creating the ALB. | string | `10m` | no |
-| load_balancer_delete_timeout | Timeout value when deleting the ALB. | string | `10m` | no |
-| load_balancer_type | The type of load balancer to create. Possible values are application or network. The default value is application. | string | `` | no |
-| load_balancer_update_timeout | Timeout value when updating the ALB. | string | `10m` | no |
-| log_bucket_name | S3 bucket (externally created) for storing load balancer access logs. Required if logging_enabled is true. | string | `` | no |
-| managedby | ManagedBy, eg 'CloudDrove' or 'AnmolNagpal'. | string | `anmol@clouddrove.com` | no |
-| name | Name  (e.g. `app` or `cluster`). | string | `` | no |
-| security_groups | A list of security group IDs to assign to the LB. Only valid for Load Balancers of type application. | list | `<list>` | no |
-| status_code | The HTTP redirect code. The redirect is either permanent (HTTP_301) or temporary (HTTP_302). | string | `HTTP_301` | no |
-| subnet_id | The id of the subnet of which to attach to the load balancer. You can specify only one subnet per Availability Zone. | string | `` | no |
-| subnet_mapping | A list of subnet mapping blocks describing subnets to attach to network load balancer | list(map(string)) | `<list>` | no |
+| access\_logs | Access logs Enable or Disable. | bool | `"false"` | no |
+| allocation\_id | The allocation ID of the Elastic IP address. | string | `""` | no |
+| application | Application \(e.g. `cd` or `clouddrove`\). | string | `""` | no |
+| attributes | Additional attributes \(e.g. `1`\). | list | `<list>` | no |
+| availability\_zones | The AZ's to serve traffic in. | list(map(string)) | `<list>` | no |
+| clb\_enable | If true, create clb. | bool | `"false"` | no |
+| connection\_draining | TBoolean to enable connection draining. Default: false. | bool | `"false"` | no |
+| connection\_draining\_timeout | The time after which connection draining is aborted in seconds. | number | `"300"` | no |
+| delimiter | Delimiter to be used between `organization`, `environment`, `name` and `attributes`. | string | `"-"` | no |
+| drop\_invalid\_header\_fields | Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer \(true\) or routed to targets \(false\). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type application. | bool | `"false"` | no |
+| enable | If true, create alb. | bool | `"false"` | no |
+| enable\_connection\_draining | Whether or not to enable connection draining \("true" or "false"\). | bool | `"false"` | no |
+| enable\_cross\_zone\_load\_balancing | Indicates whether cross zone load balancing should be enabled in application load balancers. | bool | `"false"` | no |
+| enable\_deletion\_protection | If true, deletion of the load balancer will be disabled via the AWS API. This will prevent Terraform from deleting the load balancer. Defaults to false. | bool | `"false"` | no |
+| enable\_http2 | Indicates whether HTTP/2 is enabled in application load balancers. | bool | `"true"` | no |
+| environment | Environment \(e.g. `prod`, `dev`, `staging`\). | string | `""` | no |
+| health\_check\_healthy\_threshold | The number of successful health checks before an instance is put into service. | number | `"10"` | no |
+| health\_check\_interval | The time between health check attempts in seconds. | number | `"30"` | no |
+| health\_check\_target | The target to use for health checks. | string | `"TCP:80"` | no |
+| health\_check\_timeout | The time after which a health check is considered failed in seconds. | number | `"5"` | no |
+| health\_check\_unhealthy\_threshold | The number of failed health checks before an instance is taken out of service. | number | `"2"` | no |
+| http\_enabled | A boolean flag to enable/disable HTTP listener. | bool | `"true"` | no |
+| http\_listener\_type | The type of routing action. Valid values are forward, redirect, fixed-response, authenticate-cognito and authenticate-oidc. | string | `"redirect"` | no |
+| http\_port | The port on which the load balancer is listening. like 80 or 443. | number | `"80"` | no |
+| http\_tcp\_listeners | A list of maps describing the HTTP listeners for this ALB. Required key/values: port, protocol. Optional key/values: target\_group\_index \(defaults to 0\) | list(map(string)) | `<list>` | no |
+| https\_enabled | A boolean flag to enable/disable HTTPS listener. | bool | `"true"` | no |
+| https\_listeners | A list of maps describing the HTTPS listeners for this ALB. Required key/values: port, certificate\_arn. Optional key/values: ssl\_policy \(defaults to ELBSecurityPolicy-2016-08\), target\_group\_index \(defaults to 0\) | list(map(string)) | `<list>` | no |
+| https\_port | The port on which the load balancer is listening. like 80 or 443. | number | `"443"` | no |
+| idle\_timeout | The time in seconds that the connection is allowed to be idle. | number | `"60"` | no |
+| instance\_count | The count of instances. | number | `"0"` | no |
+| internal | If true, the LB will be internal. | string | `""` | no |
+| ip\_address\_type | The type of IP addresses used by the subnets for your load balancer. The possible values are ipv4 and dualstack. | string | `"ipv4"` | no |
+| label\_order | Label order, e.g. `name`,`application`. | list | `<list>` | no |
+| listener\_certificate\_arn | The ARN of the SSL server certificate. Exactly one certificate is required if the protocol is HTTPS. | string | `""` | no |
+| listener\_protocol | The protocol for connections from clients to the load balancer. Valid values are TCP, HTTP and HTTPS. Defaults to HTTP. | string | `"HTTPS"` | no |
+| listener\_ssl\_policy | The security policy if using HTTPS externally on the load balancer. \[See\]\(https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table.html\). | string | `"ELBSecurityPolicy-2016-08"` | no |
+| listener\_type | The type of routing action. Valid values are forward, redirect, fixed-response, authenticate-cognito and authenticate-oidc. | string | `"forward"` | no |
+| listeners | A list of listener configurations for the ELB. | object | `<list>` | no |
+| load\_balancer\_create\_timeout | Timeout value when creating the ALB. | string | `"10m"` | no |
+| load\_balancer\_delete\_timeout | Timeout value when deleting the ALB. | string | `"10m"` | no |
+| load\_balancer\_type | The type of load balancer to create. Possible values are application or network. The default value is application. | string | `""` | no |
+| load\_balancer\_update\_timeout | Timeout value when updating the ALB. | string | `"10m"` | no |
+| log\_bucket\_name | S3 bucket \(externally created\) for storing load balancer access logs. Required if logging\_enabled is true. | string | `""` | no |
+| managedby | ManagedBy, eg 'CloudDrove' or 'AnmolNagpal'. | string | `"anmol@clouddrove.com"` | no |
+| name | Name  \(e.g. `app` or `cluster`\). | string | `""` | no |
+| security\_groups | A list of security group IDs to assign to the LB. Only valid for Load Balancers of type application. | list | `<list>` | no |
+| status\_code | The HTTP redirect code. The redirect is either permanent \(HTTP\_301\) or temporary \(HTTP\_302\). | string | `"HTTP_301"` | no |
+| subnet\_id | The id of the subnet of which to attach to the load balancer. You can specify only one subnet per Availability Zone. | string | `""` | no |
+| subnet\_mapping | A list of subnet mapping blocks describing subnets to attach to network load balancer | list(map(string)) | `<list>` | no |
 | subnets | A list of subnet IDs to attach to the LB. Subnets cannot be updated for Load Balancers of type network. Changing this value will for load balancers of type network will force a recreation of the resource. | list | `<list>` | no |
-| tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | map | `<map>` | no |
-| target_group_port | The port on which targets receive traffic, unless overridden when registering a specific target. | string | `80` | no |
-| target_groups | A list of maps containing key/value pairs that define the target groups to be created. Order of these maps is important and the index of these are to be referenced in listener definitions. Required key/values: name, backend_protocol, backend_port. Optional key/values are in the target_groups_defaults variable. | any | `<list>` | no |
-| target_id | The ID of the target. This is the Instance ID for an instance, or the container ID for an ECS container. If the target type is ip, specify an IP address. | list | - | yes |
-| vpc_id | The identifier of the VPC in which to create the target group. | string | `` | no |
+| tags | Additional tags \(e.g. map\(`BusinessUnit`,`XYZ`\). | map | `<map>` | no |
+| target\_group\_port | The port on which targets receive traffic, unless overridden when registering a specific target. | string | `"80"` | no |
+| target\_groups | A list of maps containing key/value pairs that define the target groups to be created. Order of these maps is important and the index of these are to be referenced in listener definitions. Required key/values: name, backend\_protocol, backend\_port. Optional key/values are in the target\_groups\_defaults variable. | any | `<list>` | no |
+| target\_id | The ID of the target. This is the Instance ID for an instance, or the container ID for an ECS container. If the target type is ip, specify an IP address. | list | n/a | yes |
+| target\_type | The type of target that you must specify when registering targets with this target group. | string | `""` | no |
+| vpc\_id | The identifier of the VPC in which to create the target group. | string | `""` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | arn | The ARN of the ALB. |
-| arn_suffix | The ARN suffix of the ALB. |
-| clb_arn | The ARN of the CLB. |
-| clb_name | DNS name of CLB. |
-| clb_zone_id | The ID of the zone which ALB is provisioned. |
-| dns_name | DNS name of ALB. |
-| http_listener_arn | The ARN of the HTTP listener. |
-| https_listener_arn | The ARN of the HTTPS listener. |
-| listener_arns | A list of all the listener ARNs. |
-| main_target_group_arn | The main target group ARN. |
+| arn\_suffix | The ARN suffix of the ALB. |
+| clb\_arn | The ARN of the CLB. |
+| clb\_name | DNS name of CLB. |
+| clb\_zone\_id | The ID of the zone which ALB is provisioned. |
+| dns\_name | DNS name of ALB. |
+| http\_listener\_arn | The ARN of the HTTP listener. |
+| https\_listener\_arn | The ARN of the HTTPS listener. |
+| listener\_arns | A list of all the listener ARNs. |
+| main\_target\_group\_arn | The main target group ARN. |
 | name | The ARN suffix of the ALB. |
 | tags | A mapping of tags to assign to the resource. |
-| zone_id | The ID of the zone which ALB is provisioned. |
+| zone\_id | The ID of the zone which ALB is provisioned. |
 
 
 
