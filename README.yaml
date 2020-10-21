@@ -36,7 +36,8 @@ usage : |-
   ### ALB Example
   ```hcl
     module "alb" {
-      source                     = "git::https://github.com/clouddrove/terraform-aws-alb.git?ref=tags/0.13.0"
+      source                     = "clouddrove/alb/aws"
+      version                    = "0.13.0"
       name                       = "alb"
       application                = "clouddrove"
       environment                = "test"
@@ -80,7 +81,8 @@ usage : |-
   ### NLB Example
   ```hcl
     module "alb" {
-      source                     = "git::https://github.com/clouddrove/terraform-aws-alb.git?ref=tags/0.13.0"
+      source                     = "clouddrove/alb/aws"
+      version                    = "0.13.0"
       name                       = "nlb"
       application                = "clouddrove"
       environment                = "test"
@@ -127,8 +129,8 @@ usage : |-
   ### CLB Example
   ```hcl
     module "clb" {
-    source = "git::https://github.com/clouddrove/terraform-aws-alb.git?ref=tags/0.13.0"
-
+    source          = "clouddrove/alb/aws"
+    version         = "0.13.0"
     name            = "clb"
     application     = "clouddrove"
     environment     = "test"
