@@ -60,7 +60,7 @@ module "iam-role" {
   repository  = "https://github.com/clouddrove/terraform-aws-iam-role"
   environment = "test"
   label_order = ["name", "environment"]
-  
+
   assume_role_policy = data.aws_iam_policy_document.default.json
 
   policy_enabled = true
@@ -124,10 +124,10 @@ module "ec2" {
 module "alb" {
   source = "./../../"
 
-  name        = "alb"
-  repository  = "https://github.com/clouddrove/terraform-aws-alb"
-  environment = "test"
-  label_order = ["name", "environment"]
+  name                       = "alb"
+  repository                 = "https://github.com/clouddrove/terraform-aws-alb"
+  environment                = "test"
+  label_order                = ["name", "environment"]
   enable                     = true
   internal                   = false
   load_balancer_type         = "application"

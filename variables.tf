@@ -190,7 +190,7 @@ variable "listener_ssl_policy" {
 
 variable "listener_certificate_arn" {
   type        = string
-  sensitive   = true 
+  sensitive   = true
   default     = ""
   description = "The ARN of the SSL server certificate. Exactly one certificate is required if the protocol is HTTPS."
 }
