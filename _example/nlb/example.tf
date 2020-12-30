@@ -3,23 +3,21 @@ provider "aws" {
 }
 
 module "vpc" {
-  source      = "clouddrove/vpc/aws"
-  version     = "0.13.0"
+  source      = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=0.14"
   name        = "vpc"
-  application = "clouddrove"
+  repository  = "https://github.com/clouddrove/terraform-aws-vpc"
   environment = "test"
-  label_order = ["environment", "application", "name"]
+  label_order = ["name", "environment"]
 
   cidr_block = "172.16.0.0/16"
 }
 
 module "public_subnets" {
-  source      = "clouddrove/subnet/aws"
-  version     = "0.13.0"
+  source      = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=0.14"
   name        = "public-subnet"
-  application = "clouddrove"
+  repository  = "https://github.com/clouddrove/terraform-aws-subnet"
   environment = "test"
-  label_order = ["environment", "application", "name"]
+  label_order = ["name", "environment"]
 
   availability_zones = ["eu-west-1b", "eu-west-1c"]
   vpc_id             = module.vpc.vpc_id
@@ -30,12 +28,12 @@ module "public_subnets" {
 }
 
 module "http-https" {
-  source      = "clouddrove/security-group/aws"
-  version     = "0.13.0"
+  source      = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=0.14"
   name        = "http-https"
-  application = "clouddrove"
+  repository  = "https://github.com/clouddrove/terraform-aws-security-group"
   environment = "test"
-  label_order = ["environment", "application", "name"]
+  label_order = ["name", "environment"]
+
 
   vpc_id        = module.vpc.vpc_id
   allowed_ip    = ["0.0.0.0/0"]
@@ -43,12 +41,11 @@ module "http-https" {
 }
 
 module "ssh" {
-  source      = "clouddrove/security-group/aws"
-  version     = "0.13.0"
+  source      = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=0.14"
   name        = "ssh"
-  application = "clouddrove"
+  repository  = "https://github.com/clouddrove/terraform-aws-security-group"
   environment = "test"
-  label_order = ["environment", "application", "name"]
+  label_order = ["name", "environment"]
 
   vpc_id        = module.vpc.vpc_id
   allowed_ip    = [module.vpc.vpc_cidr_block]
@@ -56,12 +53,12 @@ module "ssh" {
 }
 
 module "iam-role" {
-  source             = "clouddrove/iam-role/aws"
-  version            = "0.13.0"
-  name               = "iam-role"
-  application        = "clouddrove"
-  environment        = "test"
-  label_order        = ["environment", "application", "name"]
+  source      = "git::https://github.com/clouddrove/terraform-aws-iam-role.git?ref=0.14"
+  name        = "iam-role"
+  repository  = "https://github.com/clouddrove/terraform-aws-iam-role"
+  environment = "test"
+  label_order = ["name", "environment"]
+
   assume_role_policy = data.aws_iam_policy_document.default.json
 
   policy_enabled = true
@@ -93,12 +90,12 @@ data "aws_iam_policy_document" "iam-policy" {
 }
 
 module "ec2" {
-  source         = "clouddrove/ec2/aws"
-  version        = "0.13.0"
-  name           = "ec2-instance"
-  application    = "clouddrove"
-  environment    = "test"
-  label_order    = ["environment", "application", "name"]
+  source      = "git::https://github.com/clouddrove/terraform-aws-ec2.git?ref=0.14"
+  name        = "ec2-instance"
+  repository  = "https://github.com/clouddrove/terraform-aws-ec2"
+  environment = "test"
+  label_order = ["name", "environment"]
+
   instance_count = 1
   ami            = "ami-08d658f84a6d84a80"
   instance_type  = "t2.nano"
@@ -126,9 +123,9 @@ module "nlb" {
   source = "./../../"
 
   name        = "nlb"
-  application = "clouddrove"
+  repository  = "https://github.com/clouddrove/terraform-aws-alb"
   environment = "test"
-  label_order = ["environment", "application", "name"]
+  label_order = ["name", "environment"]
 
   enable                     = true
   internal                   = false
