@@ -1,4 +1,4 @@
-git "yesoutput" "arn" {
+output "arn" {
   value       = module.nlb.*.arn
   description = "The ARN suffix of the ALB"
 }
