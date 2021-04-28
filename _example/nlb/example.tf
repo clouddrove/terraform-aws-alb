@@ -135,9 +135,6 @@ module "nlb" {
   source = "./../../"
 
   name        = "nlb"
-  repository  = "https://github.com/clouddrove/terraform-aws-alb"
-  environment = "test"
-  label_order = ["name", "environment"]
 
   enable                     = true
   internal                   = false

@@ -84,9 +84,6 @@ usage : |-
       source                     = "clouddrove/alb/aws"
       version                    = "0.14.0"
       name                       = "nlb"
-      repository                  = "https://registry.terraform.io/modules/clouddrove/terraform-aws-alb/aws/0.14.0"
-      environment                = "test"
-      label_order                = ["name", "environment"]
       internal                   = false
       load_balancer_type         = "application"
       instance_count             = module.ec2.instance_count

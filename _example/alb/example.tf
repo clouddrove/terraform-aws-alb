@@ -137,9 +137,6 @@ module "alb" {
   source = "./../../"
 
   name                       = "alb"
-  repository                 = "https://github.com/clouddrove/terraform-aws-alb"
-  environment                = "test"
-  label_order                = ["name", "environment"]
   enable                     = true
   internal                   = false
   load_balancer_type         = "application"

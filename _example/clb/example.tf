@@ -134,9 +134,7 @@ module "clb" {
   source = "./../../"
 
   name        = "clb"
-  repository  = "https://github.com/clouddrove/terraform-aws-alb"
-  environment = "test"
-  label_order = ["name", "environment"]
+
 
   load_balancer_type = "classic"
   clb_enable         = true
