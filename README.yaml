@@ -39,7 +39,7 @@ usage : |-
       source                     = "clouddrove/alb/aws"
       version                    = "0.14.0"
       name                       = "alb"
-      repository                 = "https://github.com/clouddrove/terraform-aws-alb"
+      repository                  = "https://registry.terraform.io/modules/clouddrove/terraform-aws-alb/aws/0.14.0"
       environment                = "test"
       label_order                = ["name", "environment"]
       internal                   = false
@@ -84,7 +84,7 @@ usage : |-
       source                     = "clouddrove/alb/aws"
       version                    = "0.14.0"
       name                       = "nlb"
-      repository                 = "https://github.com/clouddrove/terraform-aws-alb"
+      repository                  = "https://registry.terraform.io/modules/clouddrove/terraform-aws-alb/aws/0.14.0"
       environment                = "test"
       label_order                = ["name", "environment"]
       internal                   = false
@@ -132,7 +132,7 @@ usage : |-
     source                     = "clouddrove/alb/aws"
     version                    = "0.14.0"
     name                       = "clb"
-    repository                 = "https://github.com/clouddrove/terraform-aws-alb"
+    repository                  = "https://registry.terraform.io/modules/clouddrove/terraform-aws-alb/aws/0.14.0"
     environment                = "test"
     label_order                = ["name", "environment"]
 

@@ -3,7 +3,9 @@ provider "aws" {
 }
 
 module "vpc" {
-  source      = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=0.14"
+  source  = "clouddrove/vpc/aws"
+  version = "0.14.0"
+
   name        = "vpc"
   repository  = "https://github.com/clouddrove/terraform-aws-vpc"
   environment = "test"
@@ -13,7 +15,9 @@ module "vpc" {
 }
 
 module "public_subnets" {
-  source      = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=0.14"
+  source  = "clouddrove/subnet/aws"
+  version = "0.14.0"
+
   name        = "public-subnet"
   repository  = "https://github.com/clouddrove/terraform-aws-subnet"
   environment = "test"
@@ -28,7 +32,9 @@ module "public_subnets" {
 }
 
 module "http-https" {
-  source      = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=0.14"
+  source  = "clouddrove/security-group/aws"
+  version = "0.14.0"
+
   name        = "http-https"
   repository  = "https://github.com/clouddrove/terraform-aws-security-group"
   environment = "test"
@@ -41,7 +47,9 @@ module "http-https" {
 }
 
 module "ssh" {
-  source      = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=0.14"
+  source  = "clouddrove/security-group/aws"
+  version = "0.14.0"
+
   name        = "ssh"
   repository  = "https://github.com/clouddrove/terraform-aws-security-group"
   environment = "test"
@@ -53,7 +61,9 @@ module "ssh" {
 }
 
 module "iam-role" {
-  source      = "git::https://github.com/clouddrove/terraform-aws-iam-role.git?ref=0.14"
+  source  = "clouddrove/iam-role/aws"
+  version = "0.14.0"
+
   name        = "iam-role"
   repository  = "https://github.com/clouddrove/terraform-aws-iam-role"
   environment = "test"
@@ -90,7 +100,9 @@ data "aws_iam_policy_document" "iam-policy" {
 }
 
 module "ec2" {
-  source      = "git::https://github.com/clouddrove/terraform-aws-ec2.git?ref=0.14"
+  source  = "clouddrove/ec2/aws"
+  version = "0.14.0"
+
   name        = "ec2-instance"
   repository  = "https://github.com/clouddrove/terraform-aws-ec2"
   environment = "test"
@@ -145,15 +157,6 @@ module "nlb" {
     },
   ]
 
-  // TLS
-  https_listeners = [
-    {
-      port               = 443
-      protocol           = "TLS"
-      certificate_arn    = "arn:aws:acm:eu-west-1:924144197303:certificate/0418d2ba-91f7-4196-991b-28b5c60cd4cf"
-      target_group_index = 1
-    },
-  ]
 
   target_groups = [
     {

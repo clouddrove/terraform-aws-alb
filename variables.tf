@@ -26,13 +26,13 @@ variable "environment" {
 }
 
 variable "label_order" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "Label order, e.g. `name`,`application`."
 }
 
 variable "attributes" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "Additional attributes (e.g. `1`)."
 }
@@ -44,7 +44,7 @@ variable "delimiter" {
 }
 
 variable "tags" {
-  type        = map
+  type        = map(any)
   default     = {}
   description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
 }
@@ -110,13 +110,13 @@ variable "target_groups" {
 }
 
 variable "security_groups" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "A list of security group IDs to assign to the LB. Only valid for Load Balancers of type application."
 }
 
 variable "subnets" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "A list of subnet IDs to attach to the LB. Subnets cannot be updated for Load Balancers of type network. Changing this value will for load balancers of type network will force a recreation of the resource."
   sensitive   = true
@@ -209,7 +209,7 @@ variable "vpc_id" {
 }
 
 variable "target_id" {
-  type        = list
+  type        = list(any)
   sensitive   = true
   description = "The ID of the target. This is the Instance ID for an instance, or the container ID for an ECS container. If the target type is ip, specify an IP address."
 }

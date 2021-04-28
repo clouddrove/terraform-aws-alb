@@ -3,7 +3,9 @@ provider "aws" {
 }
 
 module "vpc" {
-  source      = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=0.14"
+  source  = "clouddrove/vpc/aws"
+  version = "0.14.0"
+
   name        = "vpc"
   repository  = "https://github.com/clouddrove/terraform-aws-vpc"
   environment = "test"
@@ -13,7 +15,9 @@ module "vpc" {
 }
 
 module "public_subnets" {
-  source      = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=0.14"
+  source  = "clouddrove/subnet/aws"
+  version = "0.14.0"
+
   name        = "public-subnet"
   repository  = "https://github.com/clouddrove/terraform-aws-subnet"
   environment = "test"
@@ -28,7 +32,10 @@ module "public_subnets" {
 }
 
 module "http_https" {
-  source      = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=0.14"
+  source  = "clouddrove/security-group/aws"
+  version = "0.14.0"
+
+
   name        = "http-https"
   repository  = "https://github.com/clouddrove/terraform-aws-security-group"
   environment = "test"
@@ -40,7 +47,9 @@ module "http_https" {
 }
 
 module "ssh" {
-  source      = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=0.14"
+  source  = "clouddrove/security-group/aws"
+  version = "0.14.0"
+
   name        = "ssh"
   repository  = "https://github.com/clouddrove/terraform-aws-security-group"
   environment = "test"
@@ -52,7 +61,9 @@ module "ssh" {
 }
 
 module "iam-role" {
-  source      = "git::https://github.com/clouddrove/terraform-aws-iam-role.git?ref=0.14"
+  source  = "clouddrove/iam-role/aws"
+  version = "0.14.0"
+
   name        = "iam-role"
   repository  = "https://github.com/clouddrove/terraform-aws-iam-role"
   environment = "test"
@@ -89,7 +100,9 @@ data "aws_iam_policy_document" "iam-policy" {
 }
 
 module "ec2" {
-  source      = "git::https://github.com/clouddrove/terraform-aws-ec2.git?ref=0.14"
+  source  = "clouddrove/ec2/aws"
+  version = "0.14.0"
+
   name        = "ec2-instance"
   repository  = "https://github.com/clouddrove/terraform-aws-ec2"
   environment = "test"
