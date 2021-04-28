@@ -7,14 +7,14 @@
     Terraform AWS ALB
 </h1>
 
-<p align="center" style="font-size: 1.2rem;">
+<p align="center" style="font-size: 1.2rem;"> 
     This terraform module is used to create ALB on AWS.
      </p>
 
 <p align="center">
 
 <a href="https://www.terraform.io">
-  <img src="https://img.shields.io/badge/Terraform-v0.13-green" alt="Terraform">
+  <img src="https://img.shields.io/badge/Terraform-v0.14-green" alt="Terraform">
 </a>
 <a href="LICENSE.md">
   <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="Licence">
@@ -38,7 +38,7 @@
 <hr>
 
 
-We eat, drink, sleep and most importantly love **DevOps**. We are working towards strategies for standardizing architecture while ensuring security for the infrastructure. We are strong believer of the philosophy <b>Bigger problems are always solved by breaking them into smaller manageable problems</b>. Resonating with microservices architecture, it is considered best-practice to run database, cluster, storage in smaller <b>connected yet manageable pieces</b> within the infrastructure.
+We eat, drink, sleep and most importantly love **DevOps**. We are working towards strategies for standardizing architecture while ensuring security for the infrastructure. We are strong believer of the philosophy <b>Bigger problems are always solved by breaking them into smaller manageable problems</b>. Resonating with microservices architecture, it is considered best-practice to run database, cluster, storage in smaller <b>connected yet manageable pieces</b> within the infrastructure. 
 
 This module is basically combination of [Terraform open source](https://www.terraform.io/) and includes automatation tests and examples. It also helps to create and improve your infrastructure with minimalistic code instead of maintaining the whole infrastructure code yourself.
 
@@ -49,7 +49,7 @@ We have [*fifty plus terraform modules*][terraform_modules]. A few of them are c
 
 ## Prerequisites
 
-This module has a few dependencies:
+This module has a few dependencies: 
 
 - [Terraform 0.13](https://learn.hashicorp.com/terraform/getting-started/install.html)
 - [Go](https://golang.org/doc/install)
@@ -73,11 +73,8 @@ Here are examples of how you can use this module in your inventory structure:
 ```hcl
   module "alb" {
     source                     = "clouddrove/alb/aws"
-    version                    = "0.13.0"
+    version                    = "0.14.0"
     name                       = "alb"
-    application                = "clouddrove"
-    environment                = "test"
-    label_order                = ["environment", "application", "name"]
     internal                   = false
     load_balancer_type         = "application"
     instance_count             = module.ec2.instance_count
@@ -118,11 +115,8 @@ Here are examples of how you can use this module in your inventory structure:
 ```hcl
   module "alb" {
     source                     = "clouddrove/alb/aws"
-    version                    = "0.13.0"
+    version                    = "0.14.0"
     name                       = "nlb"
-    application                = "clouddrove"
-    environment                = "test"
-    label_order                = ["environment", "application", "name"]
     internal                   = false
     load_balancer_type         = "application"
     instance_count             = module.ec2.instance_count
@@ -165,12 +159,9 @@ Here are examples of how you can use this module in your inventory structure:
 ### CLB Example
 ```hcl
   module "clb" {
-  source          = "clouddrove/alb/aws"
-  version         = "0.13.0"
-  name            = "clb"
-  application     = "clouddrove"
-  environment     = "test"
-  label_order     = ["environment", "application", "name"]
+  source                     = "clouddrove/alb/aws"
+  version                    = "0.14.0"
+  name                       = "clb"
 
   load_balancer_type = "classic"
   internal        = false
@@ -214,8 +205,7 @@ Here are examples of how you can use this module in your inventory structure:
 |------|-------------|------|---------|:--------:|
 | access\_logs | Access logs Enable or Disable. | `bool` | `false` | no |
 | allocation\_id | The allocation ID of the Elastic IP address. | `string` | `""` | no |
-| application | Application (e.g. `cd` or `clouddrove`). | `string` | `""` | no |
-| attributes | Additional attributes (e.g. `1`). | `list` | `[]` | no |
+| attributes | Additional attributes (e.g. `1`). | `list(any)` | `[]` | no |
 | availability\_zones | The AZ's to serve traffic in. | `list(map(string))` | `[]` | no |
 | clb\_enable | If true, create clb. | `bool` | `false` | no |
 | connection\_draining | TBoolean to enable connection draining. Default: false. | `bool` | `false` | no |
@@ -227,7 +217,7 @@ Here are examples of how you can use this module in your inventory structure:
 | enable\_cross\_zone\_load\_balancing | Indicates whether cross zone load balancing should be enabled in application load balancers. | `bool` | `false` | no |
 | enable\_deletion\_protection | If true, deletion of the load balancer will be disabled via the AWS API. This will prevent Terraform from deleting the load balancer. Defaults to false. | `bool` | `false` | no |
 | enable\_http2 | Indicates whether HTTP/2 is enabled in application load balancers. | `bool` | `true` | no |
-| environment | Environment (e.g. `prod`, `dev`, `staging`). | `string` | `""` | no |
+| environment | Environment (e.g. `prod`, `dev`, `staging`). | `string` | `"test"` | no |
 | health\_check\_healthy\_threshold | The number of successful health checks before an instance is put into service. | `number` | `10` | no |
 | health\_check\_interval | The time between health check attempts in seconds. | `number` | `30` | no |
 | health\_check\_target | The target to use for health checks. | `string` | `"TCP:80"` | no |
@@ -244,7 +234,7 @@ Here are examples of how you can use this module in your inventory structure:
 | instance\_count | The count of instances. | `number` | `0` | no |
 | internal | If true, the LB will be internal. | `string` | `""` | no |
 | ip\_address\_type | The type of IP addresses used by the subnets for your load balancer. The possible values are ipv4 and dualstack. | `string` | `"ipv4"` | no |
-| label\_order | Label order, e.g. `name`,`application`. | `list` | `[]` | no |
+| label\_order | Label order, e.g. `name`,`application`. | `list(any)` | <pre>[<br>  "name",<br>  "environment"<br>]</pre> | no |
 | listener\_certificate\_arn | The ARN of the SSL server certificate. Exactly one certificate is required if the protocol is HTTPS. | `string` | `""` | no |
 | listener\_protocol | The protocol for connections from clients to the load balancer. Valid values are TCP, HTTP and HTTPS. Defaults to HTTP. | `string` | `"HTTPS"` | no |
 | listener\_ssl\_policy | The security policy if using HTTPS externally on the load balancer. [See](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table.html). | `string` | `"ELBSecurityPolicy-2016-08"` | no |
@@ -255,17 +245,18 @@ Here are examples of how you can use this module in your inventory structure:
 | load\_balancer\_type | The type of load balancer to create. Possible values are application or network. The default value is application. | `string` | `""` | no |
 | load\_balancer\_update\_timeout | Timeout value when updating the ALB. | `string` | `"10m"` | no |
 | log\_bucket\_name | S3 bucket (externally created) for storing load balancer access logs. Required if logging\_enabled is true. | `string` | `""` | no |
-| managedby | ManagedBy, eg 'CloudDrove' or 'AnmolNagpal'. | `string` | `"anmol@clouddrove.com"` | no |
+| managedby | ManagedBy, eg 'CloudDrove'. | `string` | `"hello@clouddrove.com"` | no |
 | name | Name  (e.g. `app` or `cluster`). | `string` | `""` | no |
-| security\_groups | A list of security group IDs to assign to the LB. Only valid for Load Balancers of type application. | `list` | `[]` | no |
+| repository | Terraform current module repo | `string` | `"https://registry.terraform.io/modules/clouddrove/terraform-aws-alb/aws/0.14.0"` | no |
+| security\_groups | A list of security group IDs to assign to the LB. Only valid for Load Balancers of type application. | `list(any)` | `[]` | no |
 | status\_code | The HTTP redirect code. The redirect is either permanent (HTTP\_301) or temporary (HTTP\_302). | `string` | `"HTTP_301"` | no |
 | subnet\_id | The id of the subnet of which to attach to the load balancer. You can specify only one subnet per Availability Zone. | `string` | `""` | no |
 | subnet\_mapping | A list of subnet mapping blocks describing subnets to attach to network load balancer | `list(map(string))` | `[]` | no |
-| subnets | A list of subnet IDs to attach to the LB. Subnets cannot be updated for Load Balancers of type network. Changing this value will for load balancers of type network will force a recreation of the resource. | `list` | `[]` | no |
-| tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | `map` | `{}` | no |
+| subnets | A list of subnet IDs to attach to the LB. Subnets cannot be updated for Load Balancers of type network. Changing this value will for load balancers of type network will force a recreation of the resource. | `list(any)` | `[]` | no |
+| tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | `map(any)` | `{}` | no |
 | target\_group\_port | The port on which targets receive traffic, unless overridden when registering a specific target. | `string` | `80` | no |
 | target\_groups | A list of maps containing key/value pairs that define the target groups to be created. Order of these maps is important and the index of these are to be referenced in listener definitions. Required key/values: name, backend\_protocol, backend\_port. Optional key/values are in the target\_groups\_defaults variable. | `any` | `[]` | no |
-| target\_id | The ID of the target. This is the Instance ID for an instance, or the container ID for an ECS container. If the target type is ip, specify an IP address. | `list` | n/a | yes |
+| target\_id | The ID of the target. This is the Instance ID for an instance, or the container ID for an ECS container. If the target type is ip, specify an IP address. | `list(any)` | n/a | yes |
 | target\_type | The type of target that you must specify when registering targets with this target group. | `string` | `""` | no |
 | vpc\_id | The identifier of the VPC in which to create the target group. | `string` | `""` | no |
 
@@ -291,7 +282,7 @@ Here are examples of how you can use this module in your inventory structure:
 
 
 ## Testing
-In this module testing is performed with [terratest](https://github.com/gruntwork-io/terratest) and it creates a small piece of infrastructure, matches the output like ARN, ID and Tags name etc and destroy infrastructure in your AWS account. This testing is written in GO, so you need a [GO environment](https://golang.org/doc/install) in your system.
+In this module testing is performed with [terratest](https://github.com/gruntwork-io/terratest) and it creates a small piece of infrastructure, matches the output like ARN, ID and Tags name etc and destroy infrastructure in your AWS account. This testing is written in GO, so you need a [GO environment](https://golang.org/doc/install) in your system. 
 
 You need to run the following command in the testing folder:
 ```hcl
@@ -300,7 +291,7 @@ You need to run the following command in the testing folder:
 
 
 
-## Feedback
+## Feedback 
 If you come accross a bug or have any feedback, please log it in our [issue tracker](https://github.com/clouddrove/terraform-aws-alb/issues), or feel free to drop us an email at [hello@clouddrove.com](mailto:hello@clouddrove.com).
 
 If you have found it worth your time, go ahead and give us a ★ on [our GitHub](https://github.com/clouddrove/terraform-aws-alb)!
