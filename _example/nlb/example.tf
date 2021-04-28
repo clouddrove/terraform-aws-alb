@@ -134,8 +134,7 @@ module "ec2" {
 module "nlb" {
   source = "./../../"
 
-  name = "nlb"
-
+  name                       = "nlb"
   enable                     = true
   internal                   = false
   load_balancer_type         = "network"
