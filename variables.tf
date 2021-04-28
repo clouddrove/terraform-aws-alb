@@ -6,26 +6,33 @@ variable "name" {
   description = "Name  (e.g. `app` or `cluster`)."
 }
 
-variable "application" {
+variable "repository" {
   type        = string
-  default     = ""
-  description = "Application (e.g. `cd` or `clouddrove`)."
+  default     = "https://registry.terraform.io/modules/clouddrove/terraform-aws-alb/aws/0.14.0"
+  description = "Terraform current module repo"
+
+  validation {
+    # regex(...) fails if it cannot find a match
+    condition     = can(regex("^https://", var.repository))
+    error_message = "The module-repo value must be a valid Git repo link."
+  }
 }
+
 
 variable "environment" {
   type        = string
-  default     = ""
+  default     = "test"
   description = "Environment (e.g. `prod`, `dev`, `staging`)."
 }
 
 variable "label_order" {
-  type        = list
-  default     = []
+  type        = list(any)
+  default     = ["name", "environment"]
   description = "Label order, e.g. `name`,`application`."
 }
 
 variable "attributes" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "Additional attributes (e.g. `1`)."
 }
@@ -37,15 +44,15 @@ variable "delimiter" {
 }
 
 variable "tags" {
-  type        = map
+  type        = map(any)
   default     = {}
   description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
 }
 
 variable "managedby" {
   type        = string
-  default     = "anmol@clouddrove.com"
-  description = "ManagedBy, eg 'CloudDrove' or 'AnmolNagpal'."
+  default     = "hello@clouddrove.com"
+  description = "ManagedBy, eg 'CloudDrove'."
 }
 
 # Module      : ALB
@@ -67,6 +74,7 @@ variable "load_balancer_type" {
   type        = string
   default     = ""
   description = "The type of load balancer to create. Possible values are application or network. The default value is application."
+  sensitive   = true
 }
 
 variable "drop_invalid_header_fields" {
@@ -91,24 +99,27 @@ variable "http_tcp_listeners" {
   description = "A list of maps describing the HTTP listeners for this ALB. Required key/values: port, protocol. Optional key/values: target_group_index (defaults to 0)"
   type        = list(map(string))
   default     = []
+  sensitive   = true
 }
 
 variable "target_groups" {
   description = "A list of maps containing key/value pairs that define the target groups to be created. Order of these maps is important and the index of these are to be referenced in listener definitions. Required key/values: name, backend_protocol, backend_port. Optional key/values are in the target_groups_defaults variable."
   type        = any
+  sensitive   = true
   default     = []
 }
 
 variable "security_groups" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "A list of security group IDs to assign to the LB. Only valid for Load Balancers of type application."
 }
 
 variable "subnets" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "A list of subnet IDs to attach to the LB. Subnets cannot be updated for Load Balancers of type network. Changing this value will for load balancers of type network will force a recreation of the resource."
+  sensitive   = true
 }
 
 variable "enable_deletion_protection" {
@@ -121,30 +132,35 @@ variable "subnet_id" {
   type        = string
   default     = ""
   description = "The id of the subnet of which to attach to the load balancer. You can specify only one subnet per Availability Zone."
+  sensitive   = true
 }
 
 variable "allocation_id" {
   type        = string
   default     = ""
   description = "The allocation ID of the Elastic IP address."
+  sensitive   = true
 }
 
 variable "https_port" {
   type        = number
   default     = 443
   description = "The port on which the load balancer is listening. like 80 or 443."
+  sensitive   = true
 }
 
 variable "listener_protocol" {
   type        = string
   default     = "HTTPS"
   description = "The protocol for connections from clients to the load balancer. Valid values are TCP, HTTP and HTTPS. Defaults to HTTP."
+  sensitive   = true
 }
 
 variable "http_port" {
   type        = number
   default     = 80
   description = "The port on which the load balancer is listening. like 80 or 443."
+  sensitive   = true
 }
 
 variable "https_enabled" {
@@ -167,12 +183,14 @@ variable "listener_type" {
 
 variable "listener_ssl_policy" {
   type        = string
+  sensitive   = true
   default     = "ELBSecurityPolicy-2016-08"
   description = "The security policy if using HTTPS externally on the load balancer. [See](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table.html)."
 }
 
 variable "listener_certificate_arn" {
   type        = string
+  sensitive   = true
   default     = ""
   description = "The ARN of the SSL server certificate. Exactly one certificate is required if the protocol is HTTPS."
 }
@@ -185,12 +203,14 @@ variable "target_group_port" {
 
 variable "vpc_id" {
   type        = string
+  sensitive   = true
   default     = ""
   description = "The identifier of the VPC in which to create the target group."
 }
 
 variable "target_id" {
-  type        = list
+  type        = list(any)
+  sensitive   = true
   description = "The ID of the target. This is the Instance ID for an instance, or the container ID for an ECS container. If the target type is ip, specify an IP address."
 }
 
@@ -214,6 +234,7 @@ variable "enable_http2" {
 
 variable "ip_address_type" {
   type        = string
+  sensitive   = true
   default     = "ipv4"
   description = "The type of IP addresses used by the subnets for your load balancer. The possible values are ipv4 and dualstack."
 }

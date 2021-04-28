@@ -16,7 +16,7 @@ github_repo: clouddrove/terraform-aws-alb
 # Badges to display
 badges:
   - name: "Terraform"
-    image: "https://img.shields.io/badge/Terraform-v0.13-green"
+    image: "https://img.shields.io/badge/Terraform-v0.14-green"
     url: "https://www.terraform.io"
   - name: "Licence"
     image: "https://img.shields.io/badge/License-MIT-blue.svg"
@@ -37,11 +37,8 @@ usage : |-
   ```hcl
     module "alb" {
       source                     = "clouddrove/alb/aws"
-      version                    = "0.13.0"
+      version                    = "0.14.0"
       name                       = "alb"
-      application                = "clouddrove"
-      environment                = "test"
-      label_order                = ["environment", "application", "name"]
       internal                   = false
       load_balancer_type         = "application"
       instance_count             = module.ec2.instance_count
@@ -82,11 +79,8 @@ usage : |-
   ```hcl
     module "alb" {
       source                     = "clouddrove/alb/aws"
-      version                    = "0.13.0"
+      version                    = "0.14.0"
       name                       = "nlb"
-      application                = "clouddrove"
-      environment                = "test"
-      label_order                = ["environment", "application", "name"]
       internal                   = false
       load_balancer_type         = "application"
       instance_count             = module.ec2.instance_count
@@ -129,12 +123,9 @@ usage : |-
   ### CLB Example
   ```hcl
     module "clb" {
-    source          = "clouddrove/alb/aws"
-    version         = "0.13.0"
-    name            = "clb"
-    application     = "clouddrove"
-    environment     = "test"
-    label_order     = ["environment", "application", "name"]
+    source                     = "clouddrove/alb/aws"
+    version                    = "0.14.0"
+    name                       = "clb"
 
     load_balancer_type = "classic"
     internal        = false
