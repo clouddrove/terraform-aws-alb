@@ -90,9 +90,9 @@ variable "subnet_mapping" {
 }
 
 variable "https_listeners" {
-  description = "A list of maps describing the HTTPS listeners for this ALB. Required key/values: port, certificate_arn. Optional key/values: ssl_policy (defaults to ELBSecurityPolicy-2016-08), target_group_index (defaults to 0)"
   type        = list(map(string))
   default     = []
+  description = "A list of maps describing the HTTPS listeners for this ALB. Required key/values: port, certificate_arn. Optional key/values: ssl_policy (defaults to ELBSecurityPolicy-2016-08), target_group_index (defaults to 0)"
 }
 
 variable "http_tcp_listeners" {
@@ -184,7 +184,7 @@ variable "listener_type" {
 variable "listener_ssl_policy" {
   type        = string
   sensitive   = true
-  default     = "ELBSecurityPolicy-2016-08"
+  default     = "ELBSecurityPolicy-TLS-1-2-2017-01"
   description = "The security policy if using HTTPS externally on the load balancer. [See](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table.html)."
 }
 
