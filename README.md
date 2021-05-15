@@ -237,7 +237,7 @@ Here are examples of how you can use this module in your inventory structure:
 | label\_order | Label order, e.g. `name`,`application`. | `list(any)` | <pre>[<br>  "name",<br>  "environment"<br>]</pre> | no |
 | listener\_certificate\_arn | The ARN of the SSL server certificate. Exactly one certificate is required if the protocol is HTTPS. | `string` | `""` | no |
 | listener\_protocol | The protocol for connections from clients to the load balancer. Valid values are TCP, HTTP and HTTPS. Defaults to HTTP. | `string` | `"HTTPS"` | no |
-| listener\_ssl\_policy | The security policy if using HTTPS externally on the load balancer. [See](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table.html). | `string` | `"ELBSecurityPolicy-2016-08"` | no |
+| listener\_ssl\_policy | The security policy if using HTTPS externally on the load balancer. [See](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table.html). | `string` | `"ELBSecurityPolicy-TLS-1-2-2017-01"` | no |
 | listener\_type | The type of routing action. Valid values are forward, redirect, fixed-response, authenticate-cognito and authenticate-oidc. | `string` | `"forward"` | no |
 | listeners | A list of listener configurations for the ELB. | <pre>list(object({<br>    lb_port : number<br>    lb_protocol : string<br>    instance_port : number<br>    instance_protocol : string<br>    ssl_certificate_id : string<br>  }))</pre> | `[]` | no |
 | load\_balancer\_create\_timeout | Timeout value when creating the ALB. | `string` | `"10m"` | no |
