@@ -222,7 +222,7 @@ variable "idle_timeout" {
 
 variable "enable_cross_zone_load_balancing" {
   type        = bool
-  default     = false
+  default     = true
   description = "Indicates whether cross zone load balancing should be enabled in application load balancers."
 }
 
