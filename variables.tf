@@ -181,12 +181,6 @@ variable "listener_type" {
   description = "The type of routing action. Valid values are forward, redirect, fixed-response, authenticate-cognito and authenticate-oidc."
 }
 
-variable "listener_ssl_policy" {
-  type        = string
-  sensitive   = true
-  default     = "ELBSecurityPolicy-TLS-1-2-2017-01"
-  description = "The security policy if using HTTPS externally on the load balancer. [See](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table.html)."
-}
 
 variable "listener_certificate_arn" {
   type        = string
