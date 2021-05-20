@@ -24,7 +24,6 @@ resource "aws_lb" "main" {
   internal                         = var.internal
   load_balancer_type               = var.load_balancer_type
   security_groups                  = var.security_groups
-  drop_invalid_header_fields       = var.drop_invalid_header_fields
   subnets                          = var.subnets
   enable_deletion_protection       = var.enable_deletion_protection
   idle_timeout                     = var.idle_timeout
@@ -32,6 +31,7 @@ resource "aws_lb" "main" {
   enable_http2                     = var.enable_http2
   ip_address_type                  = var.ip_address_type
   tags                             = module.labels.tags
+  drop_invalid_header_fields       = true
 
   timeouts {
     create = var.load_balancer_create_timeout
