@@ -113,7 +113,7 @@ module "ec2" {
   instance_count = 2
   ami            = "ami-08d658f84a6d84a80"
   instance_type  = "t2.nano"
-  monitoring     = false
+  monitoring     = true
   tenancy        = "default"
 
   vpc_security_group_ids_list = [module.ssh.security_group_ids, module.http_https.security_group_ids]
