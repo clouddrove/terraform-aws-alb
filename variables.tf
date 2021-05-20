@@ -352,3 +352,9 @@ variable "target_type" {
   default     = ""
   description = "The type of target that you must specify when registering targets with this target group."
 }
+
+variable "listener_ssl_policy" {
+  type        = string
+  default     = ""
+  description = "Listener ssl policy provide"
+}
