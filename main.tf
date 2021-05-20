@@ -39,10 +39,11 @@ resource "aws_lb" "main" {
     update = var.load_balancer_update_timeout
   }
   access_logs {
-    enabled = var.access_logs
+    enabled = true
     bucket  = var.log_bucket_name
     prefix  = module.labels.id
   }
+
   dynamic "subnet_mapping" {
     for_each = var.subnet_mapping
 
@@ -51,6 +52,7 @@ resource "aws_lb" "main" {
       allocation_id = lookup(subnet_mapping.value, "allocation_id", null)
     }
   }
+  
 }
 
 # Module      : LOAD BALANCER LISTENER HTTPS
