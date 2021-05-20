@@ -79,7 +79,7 @@ variable "load_balancer_type" {
 
 variable "drop_invalid_header_fields" {
   type        = bool
-  default     = false
+  default     = true
   description = "Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type application."
 }
 
