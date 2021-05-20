@@ -52,7 +52,7 @@ resource "aws_lb" "main" {
       allocation_id = lookup(subnet_mapping.value, "allocation_id", null)
     }
   }
-  
+
 }
 
 # Module      : LOAD BALANCER LISTENER HTTPS
