@@ -211,7 +211,6 @@ Here are examples of how you can use this module in your inventory structure:
 | connection\_draining | TBoolean to enable connection draining. Default: false. | `bool` | `false` | no |
 | connection\_draining\_timeout | The time after which connection draining is aborted in seconds. | `number` | `300` | no |
 | delimiter | Delimiter to be used between `organization`, `environment`, `name` and `attributes`. | `string` | `"-"` | no |
-| drop\_invalid\_header\_fields | Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type application. | `bool` | `true` | no |
 | enable | If true, create alb. | `bool` | `false` | no |
 | enable\_connection\_draining | Whether or not to enable connection draining ("true" or "false"). | `bool` | `false` | no |
 | enable\_cross\_zone\_load\_balancing | Indicates whether cross zone load balancing should be enabled in application load balancers. | `bool` | `true` | no |
@@ -237,7 +236,6 @@ Here are examples of how you can use this module in your inventory structure:
 | label\_order | Label order, e.g. `name`,`application`. | `list(any)` | <pre>[<br>  "name",<br>  "environment"<br>]</pre> | no |
 | listener\_certificate\_arn | The ARN of the SSL server certificate. Exactly one certificate is required if the protocol is HTTPS. | `string` | `""` | no |
 | listener\_protocol | The protocol for connections from clients to the load balancer. Valid values are TCP, HTTP and HTTPS. Defaults to HTTP. | `string` | `"HTTPS"` | no |
-| listener\_ssl\_policy | The security policy if using HTTPS externally on the load balancer. [See](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table.html). | `string` | `"ELBSecurityPolicy-TLS-1-2-2017-01"` | no |
 | listener\_type | The type of routing action. Valid values are forward, redirect, fixed-response, authenticate-cognito and authenticate-oidc. | `string` | `"forward"` | no |
 | listeners | A list of listener configurations for the ELB. | <pre>list(object({<br>    lb_port : number<br>    lb_protocol : string<br>    instance_port : number<br>    instance_protocol : string<br>    ssl_certificate_id : string<br>  }))</pre> | `[]` | no |
 | load\_balancer\_create\_timeout | Timeout value when creating the ALB. | `string` | `"10m"` | no |
