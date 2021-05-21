@@ -24,7 +24,6 @@ resource "aws_lb" "main" {
   internal                         = var.internal
   load_balancer_type               = var.load_balancer_type
   security_groups                  = var.security_groups
-  drop_invalid_header_fields       = var.drop_invalid_header_fields
   subnets                          = var.subnets
   enable_deletion_protection       = var.enable_deletion_protection
   idle_timeout                     = var.idle_timeout
@@ -32,6 +31,7 @@ resource "aws_lb" "main" {
   enable_http2                     = var.enable_http2
   ip_address_type                  = var.ip_address_type
   tags                             = module.labels.tags
+  drop_invalid_header_fields       = true
 
   timeouts {
     create = var.load_balancer_create_timeout
@@ -61,7 +61,7 @@ resource "aws_lb_listener" "https" {
   load_balancer_arn = element(aws_lb.main.*.arn, count.index)
   port              = var.https_port
   protocol          = var.listener_protocol
-  ssl_policy        = var.listener_ssl_policy
+  ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
   certificate_arn   = var.listener_certificate_arn
   default_action {
     target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
@@ -97,7 +97,7 @@ resource "aws_lb_listener" "nhttps" {
   port              = var.https_listeners[count.index]["port"]
   protocol          = lookup(var.https_listeners[count.index], "protocol", "HTTPS")
   certificate_arn   = var.https_listeners[count.index]["certificate_arn"]
-  ssl_policy        = lookup(var.https_listeners[count.index], "ssl_policy", var.listener_ssl_policy)
+  ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
   default_action {
     target_group_arn = aws_lb_target_group.main[lookup(var.https_listeners[count.index], "target_group_index", count.index)].id
     type             = "forward"

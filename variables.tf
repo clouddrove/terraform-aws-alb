@@ -77,11 +77,6 @@ variable "load_balancer_type" {
   sensitive   = true
 }
 
-variable "drop_invalid_header_fields" {
-  type        = bool
-  default     = true
-  description = "Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type application."
-}
 
 variable "subnet_mapping" {
   default     = []
@@ -181,12 +176,6 @@ variable "listener_type" {
   description = "The type of routing action. Valid values are forward, redirect, fixed-response, authenticate-cognito and authenticate-oidc."
 }
 
-variable "listener_ssl_policy" {
-  type        = string
-  sensitive   = true
-  default     = "ELBSecurityPolicy-TLS-1-2-2017-01"
-  description = "The security policy if using HTTPS externally on the load balancer. [See](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table.html)."
-}
 
 variable "listener_certificate_arn" {
   type        = string
@@ -263,11 +252,6 @@ variable "load_balancer_update_timeout" {
   description = "Timeout value when updating the ALB."
 }
 
-variable "access_logs" {
-  type        = bool
-  default     = false
-  description = "Access logs Enable or Disable."
-}
 
 variable "http_listener_type" {
   type        = string
@@ -363,4 +347,10 @@ variable "target_type" {
   type        = string
   default     = ""
   description = "The type of target that you must specify when registering targets with this target group."
+}
+
+variable "access_logs" {
+  type        = bool
+  default     = false
+  description = "Access logs Enable or Disable."
 }
