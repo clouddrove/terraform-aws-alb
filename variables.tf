@@ -252,11 +252,6 @@ variable "load_balancer_update_timeout" {
   description = "Timeout value when updating the ALB."
 }
 
-variable "access_logs" {
-  type        = bool
-  default     = false
-  description = "Access logs Enable or Disable."
-}
 
 variable "http_listener_type" {
   type        = string

@@ -39,7 +39,7 @@ resource "aws_lb" "main" {
     update = var.load_balancer_update_timeout
   }
   access_logs {
-    enabled = var.access_logs
+    enabled = true
     bucket  = var.log_bucket_name
     prefix  = module.labels.id
   }

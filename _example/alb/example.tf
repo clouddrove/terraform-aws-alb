@@ -148,8 +148,8 @@ module "alb" {
   target_id = module.ec2.instance_id
   vpc_id    = module.vpc.vpc_id
 
-  https_enabled            = false
-  http_enabled             = false
+  https_enabled            = true
+  http_enabled             = true
   https_port               = 443
   listener_type            = "forward"
   listener_certificate_arn = "arn:aws:acm:eu-west-1:924144197303:certificate/0418d2ba-91f7-4196-991b-28b5c60cd4cf"
