@@ -97,6 +97,7 @@ resource "aws_lb_listener" "nhttps" {
   port              = var.https_listeners[count.index]["port"]
   protocol          = lookup(var.https_listeners[count.index], "protocol", "HTTPS")
   certificate_arn   = var.https_listeners[count.index]["certificate_arn"]
+  ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
   default_action {
     target_group_arn = aws_lb_target_group.main[lookup(var.https_listeners[count.index], "target_group_index", count.index)].id
     type             = "forward"
