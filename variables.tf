@@ -348,3 +348,9 @@ variable "target_type" {
   default     = ""
   description = "The type of target that you must specify when registering targets with this target group."
 }
+
+variable "access_logs" {
+  type        = bool
+  default     = false
+  description = "Access logs Enable or Disable."
+}
