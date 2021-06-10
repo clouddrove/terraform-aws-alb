@@ -15,8 +15,8 @@ module "vpc" {
 }
 
 module "public_subnets" {
-  source  = "clouddrove/subnet/aws"
-  version = "0.14.0"
+  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=0.15"
+
 
   name        = "public-subnet"
   repository  = "https://github.com/clouddrove/terraform-aws-subnet"
@@ -100,8 +100,7 @@ data "aws_iam_policy_document" "iam-policy" {
 }
 
 module "ec2" {
-  source  = "clouddrove/ec2/aws"
-  version = "0.14.0"
+  source = "git::https://github.com/clouddrove/terraform-aws-ec2.git?ref=0.15"
 
   name        = "ec2-instance"
   repository  = "https://github.com/clouddrove/terraform-aws-ec2"
