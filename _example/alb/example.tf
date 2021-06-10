@@ -10,13 +10,11 @@ module "vpc" {
   repository  = "https://github.com/clouddrove/terraform-aws-vpc"
   environment = "test"
   label_order = ["name", "environment"]
-
-  cidr_block = "172.16.0.0/16"
+  cidr_block  = "172.16.0.0/16"
 }
 
 module "public_subnets" {
-  source  = "clouddrove/subnet/aws"
-  version = "0.14.0"
+  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=0.15"
 
   name        = "public-subnet"
   repository  = "https://github.com/clouddrove/terraform-aws-subnet"
@@ -24,7 +22,7 @@ module "public_subnets" {
   label_order = ["name", "environment"]
 
 
-  availability_zones = ["eu-west-1b", "eu-west-1c"]
+  availability_zones = ["eu-west-1a", "eu-west-1b"]
   vpc_id             = module.vpc.vpc_id
   cidr_block         = module.vpc.vpc_cidr_block
   type               = "public"
@@ -102,8 +100,7 @@ data "aws_iam_policy_document" "iam-policy" {
 }
 
 module "ec2" {
-  source  = "clouddrove/ec2/aws"
-  version = "0.14.0"
+  source = "git::https://github.com/clouddrove/terraform-aws-ec2.git?ref=0.15"
 
   name        = "ec2-instance"
   repository  = "https://github.com/clouddrove/terraform-aws-ec2"
@@ -118,24 +115,19 @@ module "ec2" {
 
   vpc_security_group_ids_list = [module.ssh.security_group_ids, module.http_https.security_group_ids]
   subnet_ids                  = tolist(module.public_subnets.public_subnet_id)
-
   assign_eip_address          = true
   associate_public_ip_address = true
-
-  instance_profile_enabled = true
-  iam_instance_profile     = module.iam-role.name
-
-  disk_size          = 8
-  ebs_optimized      = false
-  ebs_volume_enabled = true
-  ebs_volume_type    = "gp2"
-  ebs_volume_size    = 30
+  instance_profile_enabled    = true
+  iam_instance_profile        = module.iam-role.name
+  disk_size                   = 8
+  ebs_optimized               = false
+  ebs_volume_enabled          = true
+  ebs_volume_type             = "gp2"
+  ebs_volume_size             = 30
 }
 
-
 module "alb" {
-  source = "./../../"
-
+  source                     = "./../../"
   name                       = "alb"
   enable                     = true
   internal                   = false
@@ -154,7 +146,6 @@ module "alb" {
   listener_type            = "forward"
   listener_certificate_arn = "arn:aws:acm:eu-west-1:924144197303:certificate/0418d2ba-91f7-4196-991b-28b5c60cd4cf"
   target_group_port        = 80
-
   target_groups = [
     {
       backend_protocol     = "HTTP"

@@ -7,7 +7,7 @@
 #              tags for resources. You can use terraform-labels to implement a strict
 #              naming convention.
 module "labels" {
-  source = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.14.0"
+  source = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.15.0"
 
   name        = var.name
   repository  = var.repository
@@ -177,6 +177,72 @@ resource "aws_lb_target_group_attachment" "nattachment" {
   port             = lookup(var.target_groups[count.index], "backend_port", null)
 }
 
+resource "aws_globalaccelerator_accelerator" "this" {
+  name            = var.name
+  ip_address_type = "IPV4"
+  enabled         = true
+
+  attributes {
+    flow_logs_enabled = false
+  }
+}
+
+
+resource "aws_globalaccelerator_listener" "http" {
+  accelerator_arn = aws_globalaccelerator_accelerator.this.id
+  client_affinity = "NONE"
+  protocol        = "TCP"
+
+  port_range {
+    from_port = 80
+    to_port   = 80
+  }
+}
+resource "aws_globalaccelerator_listener" "https" {
+  accelerator_arn = aws_globalaccelerator_accelerator.this.id
+  client_affinity = "NONE"
+  protocol        = "TCP"
+
+  port_range {
+    from_port = 443
+    to_port   = 443
+  }
+}
+
+resource "aws_globalaccelerator_endpoint_group" "http" {
+  listener_arn          = aws_globalaccelerator_listener.http.id
+  health_check_protocol = "TCP"
+  health_check_port     = 80
+
+  endpoint_configuration {
+    endpoint_id = join("", aws_lb.main.*.arn)
+    weight      = 100
+  }
+
+  lifecycle {
+    ignore_changes = [
+      health_check_path,
+    ]
+  }
+}
+
+resource "aws_globalaccelerator_endpoint_group" "https" {
+  listener_arn          = aws_globalaccelerator_listener.https.id
+  health_check_protocol = "TCP"
+  health_check_port     = 443
+
+  endpoint_configuration {
+    endpoint_id = join("", aws_lb.main.*.arn)
+    weight      = 100
+  }
+
+  lifecycle {
+    ignore_changes = [
+      health_check_path,
+    ]
+  }
+}
+
 
 # Module      : Classic LOAD BALANCER
 # Description : This terraform module is used to create classic Load Balancer on AWS.
@@ -192,7 +258,6 @@ resource "aws_elb" "main" {
   connection_draining_timeout = var.connection_draining_timeout
   security_groups             = var.security_groups
   subnets                     = var.subnets
-
   dynamic "listener" {
     for_each = var.listeners
     content {

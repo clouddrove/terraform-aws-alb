@@ -113,6 +113,7 @@ module "ec2" {
   instance_type  = "t2.nano"
   monitoring     = false
   tenancy        = "default"
+  access_logs    = true
 
   vpc_security_group_ids_list = [module.ssh.security_group_ids, module.http-https.security_group_ids]
   subnet_ids                  = tolist(module.public_subnets.public_subnet_id)
