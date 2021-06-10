@@ -111,7 +111,6 @@ module "ec2" {
   instance_type  = "t2.nano"
   monitoring     = false
   tenancy        = "default"
-  access_logs    = true
 
   vpc_security_group_ids_list = [module.ssh.security_group_ids, module.http-https.security_group_ids]
   subnet_ids                  = tolist(module.public_subnets.public_subnet_id)
@@ -140,6 +139,7 @@ module "nlb" {
   instance_count             = module.ec2.instance_count
   subnets                    = module.public_subnets.public_subnet_id
   enable_deletion_protection = false
+  access_logs                = true
 
   target_id = module.ec2.instance_id
   vpc_id    = module.vpc.vpc_id
