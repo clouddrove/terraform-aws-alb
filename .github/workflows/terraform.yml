@@ -39,7 +39,7 @@ jobs:
         uses: 'clouddrove/github-actions@v7.0'
         with:
           actions_subcommand: 'init'
-          tf_actions_working_dir: ./_example/albz
+          tf_actions_working_dir: ./_example/alb
 
       - name: 'Terraform validate'
         uses: 'clouddrove/github-actions@v7.0'
