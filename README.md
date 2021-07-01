@@ -7,14 +7,14 @@
     Terraform AWS ALB
 </h1>
 
-<p align="center" style="font-size: 1.2rem;">
+<p align="center" style="font-size: 1.2rem;"> 
     This terraform module is used to create ALB on AWS.
      </p>
 
 <p align="center">
 
 <a href="https://www.terraform.io">
-  <img src="https://img.shields.io/badge/Terraform-v0.14-green" alt="Terraform">
+  <img src="https://img.shields.io/badge/Terraform-v0.15-green" alt="Terraform">
 </a>
 <a href="LICENSE.md">
   <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="Licence">
@@ -38,7 +38,7 @@
 <hr>
 
 
-We eat, drink, sleep and most importantly love **DevOps**. We are working towards strategies for standardizing architecture while ensuring security for the infrastructure. We are strong believer of the philosophy <b>Bigger problems are always solved by breaking them into smaller manageable problems</b>. Resonating with microservices architecture, it is considered best-practice to run database, cluster, storage in smaller <b>connected yet manageable pieces</b> within the infrastructure.
+We eat, drink, sleep and most importantly love **DevOps**. We are working towards strategies for standardizing architecture while ensuring security for the infrastructure. We are strong believer of the philosophy <b>Bigger problems are always solved by breaking them into smaller manageable problems</b>. Resonating with microservices architecture, it is considered best-practice to run database, cluster, storage in smaller <b>connected yet manageable pieces</b> within the infrastructure. 
 
 This module is basically combination of [Terraform open source](https://www.terraform.io/) and includes automatation tests and examples. It also helps to create and improve your infrastructure with minimalistic code instead of maintaining the whole infrastructure code yourself.
 
@@ -49,7 +49,7 @@ We have [*fifty plus terraform modules*][terraform_modules]. A few of them are c
 
 ## Prerequisites
 
-This module has a few dependencies:
+This module has a few dependencies: 
 
 - [Terraform 0.13](https://learn.hashicorp.com/terraform/getting-started/install.html)
 - [Go](https://golang.org/doc/install)
@@ -73,7 +73,7 @@ Here are examples of how you can use this module in your inventory structure:
 ```hcl
   module "alb" {
     source                     = "clouddrove/alb/aws"
-    version                    = "0.14.0"
+    version                    = "0.15.0"
     name                       = "alb"
     internal                   = false
     load_balancer_type         = "application"
@@ -115,7 +115,7 @@ Here are examples of how you can use this module in your inventory structure:
 ```hcl
   module "alb" {
     source                     = "clouddrove/alb/aws"
-    version                    = "0.14.0"
+    version                    = "0.15.0"
     name                       = "nlb"
     internal                   = false
     load_balancer_type         = "application"
@@ -160,7 +160,7 @@ Here are examples of how you can use this module in your inventory structure:
 ```hcl
   module "clb" {
   source                     = "clouddrove/alb/aws"
-  version                    = "0.14.0"
+  version                    = "0.15.0"
   name                       = "clb"
 
   load_balancer_type = "classic"
@@ -245,7 +245,7 @@ Here are examples of how you can use this module in your inventory structure:
 | log\_bucket\_name | S3 bucket (externally created) for storing load balancer access logs. Required if logging\_enabled is true. | `string` | `""` | no |
 | managedby | ManagedBy, eg 'CloudDrove'. | `string` | `"hello@clouddrove.com"` | no |
 | name | Name  (e.g. `app` or `cluster`). | `string` | `""` | no |
-| repository | Terraform current module repo | `string` | `"https://registry.terraform.io/modules/clouddrove/terraform-aws-alb/aws/0.14.0"` | no |
+| repository | Terraform current module repo | `string` | `"https://github.com/clouddrove/terraform-aws-alb"` | no |
 | security\_groups | A list of security group IDs to assign to the LB. Only valid for Load Balancers of type application. | `list(any)` | `[]` | no |
 | status\_code | The HTTP redirect code. The redirect is either permanent (HTTP\_301) or temporary (HTTP\_302). | `string` | `"HTTP_301"` | no |
 | subnet\_id | The id of the subnet of which to attach to the load balancer. You can specify only one subnet per Availability Zone. | `string` | `""` | no |
@@ -280,7 +280,7 @@ Here are examples of how you can use this module in your inventory structure:
 
 
 ## Testing
-In this module testing is performed with [terratest](https://github.com/gruntwork-io/terratest) and it creates a small piece of infrastructure, matches the output like ARN, ID and Tags name etc and destroy infrastructure in your AWS account. This testing is written in GO, so you need a [GO environment](https://golang.org/doc/install) in your system.
+In this module testing is performed with [terratest](https://github.com/gruntwork-io/terratest) and it creates a small piece of infrastructure, matches the output like ARN, ID and Tags name etc and destroy infrastructure in your AWS account. This testing is written in GO, so you need a [GO environment](https://golang.org/doc/install) in your system. 
 
 You need to run the following command in the testing folder:
 ```hcl
@@ -289,7 +289,7 @@ You need to run the following command in the testing folder:
 
 
 
-## Feedback
+## Feedback 
 If you come accross a bug or have any feedback, please log it in our [issue tracker](https://github.com/clouddrove/terraform-aws-alb/issues), or feel free to drop us an email at [hello@clouddrove.com](mailto:hello@clouddrove.com).
 
 If you have found it worth your time, go ahead and give us a ★ on [our GitHub](https://github.com/clouddrove/terraform-aws-alb)!
