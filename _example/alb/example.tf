@@ -62,7 +62,7 @@ module "iam-role" {
   source  = "clouddrove/iam-role/aws"
   version = "0.15.0"
 
-  name        = "bobby--iam-role"
+  name        = "--iam-role"
   environment = "test"
   label_order = ["name", "environment"]
 
@@ -100,7 +100,7 @@ module "ec2" {
   source  = "clouddrove/ec2/aws"
   version = "0.15.0"
 
-  name        = "bobby--ec2-instance"
+  name        = "--ec2-instance"
   environment = "test"
   label_order = ["name", "environment"]
 
