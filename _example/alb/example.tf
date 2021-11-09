@@ -166,6 +166,22 @@ module "alb" {
         protocol            = "HTTP"
         matcher             = "200-399"
       }
+      }, {
+      backend_protocol     = "HTTP"
+      backend_port         = 80
+      target_type          = "instance"
+      deregistration_delay = 300
+      health_check = {
+        enabled             = true
+        interval            = 30
+        path                = "/"
+        port                = "traffic-port"
+        healthy_threshold   = 3
+        unhealthy_threshold = 3
+        timeout             = 10
+        protocol            = "HTTP"
+        matcher             = "200-399"
+      }
     }
   ]
 
@@ -186,14 +202,24 @@ module "alb" {
       }]
     }]
     }, {
-    http_tcp_listener_index = 0
+    http_tcp_listener_index = 1
     priority                = 500
     actions = [{
       type               = "forward"
-      target_group_index = 0
+      target_group_index = 1
 
     }]
     conditions = [{ path_patterns = ["/test.com"] }]
+    },
+    {
+      http_tcp_listener_index = 0
+      priority                = 600
+      actions = [{
+        type               = "forward"
+        target_group_index = 0
+
+      }]
+      conditions = [{ path_patterns = ["/test2.com"] }]
     },
     {
       http_tcp_listener_index = 0
