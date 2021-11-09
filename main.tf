@@ -56,19 +56,19 @@ resource "aws_lb" "main" {
 
 # Module      : LOAD BALANCER LISTENER HTTPS
 # Description : Provides a Load Balancer Listener resource.
-resource "aws_lb_listener" "https" {
-  count = var.enable == true && var.https_enabled == true && var.load_balancer_type == "application" ? 1 : 0
+# resource "aws_lb_listener" "https" {
+#   count = var.enable == true && var.https_enabled == true && var.load_balancer_type == "application" ? 1 : 0
 
-  load_balancer_arn = element(aws_lb.main.*.arn, count.index)
-  port              = var.https_port
-  protocol          = var.listener_protocol
-  ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
-  certificate_arn   = var.listener_certificate_arn
-  default_action {
-    target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
-    type             = var.listener_type
-  }
-}
+#   load_balancer_arn = element(aws_lb.main.*.arn, count.index)
+#   port              = var.https_port
+#   protocol          = var.listener_protocol
+#   ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
+#   certificate_arn   = var.listener_certificate_arn
+#   default_action {
+#     target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
+#     type             = var.listener_type
+#   }
+# }
 
 # Module      : LOAD BALANCER LISTENER HTTP
 # Description : Provides a Load Balancer Listener resource.
@@ -214,4 +214,141 @@ resource "aws_elb" "main" {
   }
 
   tags = module.labels.tags
+}
+
+resource "aws_alb_listener_rule" "http_tcp_listener_rule" {
+  count        = var.enable ? length(var.http_tcp_listener_rules) : 0
+  listener_arn = element(aws_lb_listener.http.*.arn, count.index)
+  priority     = lookup(var.http_tcp_listener_rules[count.index], "priority", null)
+
+  dynamic "action" {
+    for_each = [for action_rule in var.http_tcp_listener_rules[count.index].actions : action_rule
+    if action_rule.type == "redirect"]
+
+    content {
+      type = action.value["type"]
+      redirect {
+        host        = lookup(action.value, "host", null)
+        path        = lookup(action.value, "path", null)
+        port        = lookup(action.value, "port", null)
+        protocol    = lookup(action.value, "protocol", null)
+        query       = lookup(action.value, "query", null)
+        status_code = action.value["status_code"]
+      }
+    }
+  }
+  # forward actions
+  dynamic "action" {
+    for_each = [
+      for action_rule in var.http_tcp_listener_rules[count.index].actions :
+      action_rule
+      if action_rule.type == "forward"
+    ]
+
+    content {
+      type             = action.value["type"]
+      target_group_arn = aws_lb_target_group.main[lookup(action.value, "target_group_index", count.index)].id
+    }
+  }
+
+  dynamic "action" {
+    for_each = [
+      for action_rule in var.http_tcp_listener_rules[count.index].actions :
+      action_rule
+      if action_rule.type == "fixed-response"
+    ]
+
+    content {
+      type = action.value["type"]
+      fixed_response {
+        message_body = lookup(action.value, "message_body", null)
+        status_code  = lookup(action.value, "status_code", null)
+        content_type = action.value["content_type"]
+      }
+    }
+  }
+
+  # Path Pattern condition
+  dynamic "condition" {
+    for_each = [
+      for condition_rule in var.http_tcp_listener_rules[count.index].conditions :
+      condition_rule
+      if length(lookup(condition_rule, "path_patterns", [])) > 0
+    ]
+
+    content {
+      path_pattern {
+        values = condition.value["path_patterns"]
+      }
+    }
+  }
+  # Host header condition
+  dynamic "condition" {
+    for_each = [
+      for condition_rule in var.http_tcp_listener_rules[count.index].conditions :
+      condition_rule
+      if length(lookup(condition_rule, "host_headers", [])) > 0
+    ]
+
+    content {
+      host_header {
+        values = condition.value["host_headers"]
+      }
+    }
+  }
+
+  # Http header condition
+  dynamic "condition" {
+    for_each = [
+      for condition_rule in var.http_tcp_listener_rules[count.index].conditions :
+      condition_rule
+      if length(lookup(condition_rule, "http_headers", [])) > 0
+    ]
+
+    content {
+      dynamic "http_header" {
+        for_each = condition.value["http_headers"]
+
+        content {
+          http_header_name = http_header.value["http_header_name"]
+          values           = http_header.value["values"]
+        }
+      }
+    }
+  }
+
+  # Http request method condition
+  dynamic "condition" {
+    for_each = [
+      for condition_rule in var.http_tcp_listener_rules[count.index].conditions :
+      condition_rule
+      if length(lookup(condition_rule, "http_request_methods", [])) > 0
+    ]
+
+    content {
+      http_request_method {
+        values = condition.value["http_request_methods"]
+      }
+    }
+  }
+
+  # Query string condition
+  dynamic "condition" {
+    for_each = [
+      for condition_rule in var.http_tcp_listener_rules[count.index].conditions :
+      condition_rule
+      if length(lookup(condition_rule, "query_strings", [])) > 0
+    ]
+
+    content {
+      dynamic "query_string" {
+        for_each = condition.value["query_strings"]
+
+        content {
+          key   = lookup(query_string.value, "key", null)
+          value = query_string.value["value"]
+        }
+      }
+    }
+  }
 }

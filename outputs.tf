@@ -47,15 +47,15 @@ output "http_listener_arn" {
   description = "The ARN of the HTTP listener."
 }
 
-output "https_listener_arn" {
-  value       = join("", aws_lb_listener.https.*.arn)
-  description = "The ARN of the HTTPS listener."
-}
+# output "https_listener_arn" {
+#   value       = join("", aws_lb_listener.https.*.arn)
+#   description = "The ARN of the HTTPS listener."
+# }
 
-output "listener_arns" {
-  value       = compact(concat(aws_lb_listener.http.*.arn, aws_lb_listener.https.*.arn))
-  description = "A list of all the listener ARNs."
-}
+# output "listener_arns" {
+#   value       = compact(concat(aws_lb_listener.http.*.arn, aws_lb_listener.https.*.arn))
+#   description = "A list of all the listener ARNs."
+# }
 
 output "tags" {
   value       = module.labels.tags

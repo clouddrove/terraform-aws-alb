@@ -62,7 +62,7 @@ module "iam-role" {
   source  = "clouddrove/iam-role/aws"
   version = "0.15.0"
 
-  name        = "iam-role"
+  name        = "bobby--iam-role"
   environment = "test"
   label_order = ["name", "environment"]
 
@@ -100,7 +100,7 @@ module "ec2" {
   source  = "clouddrove/ec2/aws"
   version = "0.15.0"
 
-  name        = "ec2-instance"
+  name        = "bobby--ec2-instance"
   environment = "test"
   label_order = ["name", "environment"]
 
@@ -166,6 +166,53 @@ module "alb" {
         protocol            = "HTTP"
         matcher             = "200-399"
       }
+    }
+  ]
+
+  http_tcp_listener_rules = [{
+    http_tcp_listener_index = 0
+    priority                = 3
+    actions = [{
+      type         = "fixed-response"
+      content_type = "text/plain"
+      status_code  = 200
+      message_body = "This is a fixed response"
+    }]
+
+    conditions = [{
+      http_headers = [{
+        http_header_name = "x-Gimme-Fixed-Response"
+        values           = ["yes", "please", "right now"]
+      }]
+    }]
+    }, {
+    http_tcp_listener_index = 0
+    priority                = 500
+    actions = [{
+      type               = "forward"
+      target_group_index = 0
+
+    }]
+    conditions = [{ path_patterns = ["/test.com"] }]
+    },
+    {
+      http_tcp_listener_index = 0
+      priority                = 50000
+      actions = [{
+        type        = "redirect"
+        status_code = "HTTP_302"
+        host        = "www.youtube.com"
+        path        = "/watch"
+        query       = "v=dQw4w9WgXcQ"
+        protocol    = "HTTPS"
+
+      }]
+      conditions = [{
+        query_strings = [{
+          key   = "video"
+          value = "random"
+        }]
+      }]
     }
   ]
 }
