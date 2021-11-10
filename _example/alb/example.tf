@@ -130,6 +130,8 @@ module "ec2" {
 module "alb" {
   source = "./../../"
 
+  enable_ag = true
+
   name                       = "alb"
   enable                     = true
   internal                   = false

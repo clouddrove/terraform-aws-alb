@@ -366,3 +366,9 @@ variable "http_tcp_listener_rules" {
   type        = any
   default     = []
 }
+
+variable "enable_ag" {
+  type        = bool
+  description = "Enable global accelerator for high performance"
+
+}

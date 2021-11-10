@@ -56,19 +56,19 @@ resource "aws_lb" "main" {
 
 # Module      : LOAD BALANCER LISTENER HTTPS
 # Description : Provides a Load Balancer Listener resource.
-# resource "aws_lb_listener" "https" {
-#   count = var.enable == true && var.https_enabled == true && var.load_balancer_type == "application" ? 1 : 0
+resource "aws_lb_listener" "https" {
+  count = var.enable == true && var.https_enabled == true && var.load_balancer_type == "application" ? 1 : 0
 
-#   load_balancer_arn = element(aws_lb.main.*.arn, count.index)
-#   port              = var.https_port
-#   protocol          = var.listener_protocol
-#   ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
-#   certificate_arn   = var.listener_certificate_arn
-#   default_action {
-#     target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
-#     type             = var.listener_type
-#   }
-# }
+  load_balancer_arn = element(aws_lb.main.*.arn, count.index)
+  port              = var.https_port
+  protocol          = var.listener_protocol
+  ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
+  certificate_arn   = var.listener_certificate_arn
+  default_action {
+    target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
+    type             = var.listener_type
+  }
+}
 
 # Module      : LOAD BALANCER LISTENER HTTP
 # Description : Provides a Load Balancer Listener resource.
@@ -350,5 +350,37 @@ resource "aws_alb_listener_rule" "http_tcp_listener_rule" {
         }
       }
     }
+  }
+}
+
+resource "aws_globalaccelerator_accelerator" "alb_ga" {
+  count           = var.enable_ag ? 1 : 0
+  name            = "${module.labels.id}-GA"
+  ip_address_type = "IPV4"
+  enabled         = true
+  tags            = module.labels.tags
+}
+
+
+
+resource "aws_globalaccelerator_listener" "ALB_GA_listener" {
+  count           = var.enable_ag ? 1 : 0
+  accelerator_arn = aws_globalaccelerator_accelerator.alb_ga[count.index].id
+  client_affinity = "SOURCE_IP"
+  protocol        = "TCP"
+
+  port_range {
+    from_port = 80
+    to_port   = 80
+  }
+}
+
+resource "aws_globalaccelerator_endpoint_group" "example" {
+  count        = var.enable_ag ? 1 : 0
+  listener_arn = aws_globalaccelerator_listener.ALB_GA_listener[count.index].id
+
+  endpoint_configuration {
+    endpoint_id = element(aws_lb.main.*.arn, 0)
+    weight      = 100
   }
 }
