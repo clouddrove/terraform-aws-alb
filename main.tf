@@ -56,19 +56,19 @@ resource "aws_lb" "main" {
 
 # Module      : LOAD BALANCER LISTENER HTTPS
 # Description : Provides a Load Balancer Listener resource.
-resource "aws_lb_listener" "https" {
-  count = var.enable == true && var.https_enabled == true && var.load_balancer_type == "application" ? 1 : 0
+# resource "aws_lb_listener" "https" {
+#   count = var.enable == true && var.https_enabled == true && var.load_balancer_type == "application" ? 1 : 0
 
-  load_balancer_arn = element(aws_lb.main.*.arn, count.index)
-  port              = var.https_port
-  protocol          = var.listener_protocol
-  ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
-  certificate_arn   = var.listener_certificate_arn
-  default_action {
-    target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
-    type             = var.listener_type
-  }
-}
+#   load_balancer_arn = element(aws_lb.main.*.arn, count.index)
+#   port              = var.https_port
+#   protocol          = var.listener_protocol
+#   ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
+#   certificate_arn   = var.listener_certificate_arn
+#   default_action {
+#     target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
+#     type             = var.listener_type
+#   }
+# }
 
 # Module      : LOAD BALANCER LISTENER HTTP
 # Description : Provides a Load Balancer Listener resource.
@@ -376,7 +376,7 @@ resource "aws_globalaccelerator_listener" "ALB_GA_listener" {
 }
 
 resource "aws_globalaccelerator_endpoint_group" "example" {
-  count        = var.enable_ag ? 1 : 0
+  count        = var.enable_ag && var.load_balancer_type == "application" ? 1 : 0
   listener_arn = aws_globalaccelerator_listener.ALB_GA_listener[count.index].id
 
   endpoint_configuration {

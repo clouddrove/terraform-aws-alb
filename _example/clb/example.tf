@@ -125,7 +125,8 @@ module "ec2" {
 }
 
 module "clb" {
-  source = "./../../"
+  source    = "./../../"
+  enable_ag = true
 
   name               = "clb"
   load_balancer_type = "classic"

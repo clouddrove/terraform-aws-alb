@@ -128,6 +128,7 @@ module "ec2" {
 module "nlb" {
   source = "./../../"
 
+  enable_ag                  = true
   name                       = "nlb"
   enable                     = true
   internal                   = false
