@@ -15,7 +15,7 @@ jobs:
         uses: aquasecurity/tfsec-sarif-action@v0.1.0
         with:
           sarif_file: tfsec.sarif
-          working_directory: _example
+          working_directory: _example/alb
           full_repo_scan: true
 
       - name: Upload SARIF file
