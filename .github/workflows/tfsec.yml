@@ -16,7 +16,7 @@ jobs:
         with:
           sarif_file: tfsec.sarif
           working_directory: _example/alb
-          working_directory: _example/clb
+          # working_directory: _example/clb
           working_directory: _example/nlb
           full_repo_scan: true
 
