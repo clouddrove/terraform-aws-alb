@@ -142,7 +142,7 @@ module "alb" {
   target_id = module.ec2.instance_id
   vpc_id    = module.vpc.vpc_id
 
-  https_enabled            = true
+  https_enabled            = false
   http_enabled             = true
   https_port               = 443
   listener_type            = "forward"
