@@ -179,9 +179,9 @@ resource "aws_lb_target_group" "main" {
 resource "aws_lb_target_group_attachment" "attachment" {
   count = var.enable && var.load_balancer_type == "application" && var.target_type == "" ? var.instance_count : 0
 
-  target_group_arn  = element(aws_lb_target_group.main.*.arn, count.index)
-  target_id         = element(var.target_id, count.index)
-  port              = var.target_group_port
+  target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
+  target_id        = element(var.target_id, count.index)
+  port             = var.target_group_port
 }
 
 resource "aws_lb_target_group_attachment" "nattachment" {
