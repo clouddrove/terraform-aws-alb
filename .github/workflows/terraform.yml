@@ -31,9 +31,7 @@ jobs:
           - ${{ needs.versionExtract.outputs.minVersion }}
           - ${{ needs.versionExtract.outputs.maxVersion }}
         directory:
-          - _example/alb
-          - _example/clb
-          - _example/nlb
+          - _example/
 
     steps:
       - name: Checkout
@@ -56,7 +54,7 @@ jobs:
           cd ${{ matrix.directory }}
           terraform init
           terraform validate
-
+          
       - name: tflint
         uses: reviewdog/action-tflint@master
         with:
