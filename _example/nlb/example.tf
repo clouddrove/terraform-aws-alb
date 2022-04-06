@@ -130,7 +130,7 @@ module "nlb" {
 
   name                       = "nlb"
   enable                     = true
-  internal                   = false
+  internal                   = true
   load_balancer_type         = "network"
   instance_count             = module.ec2.instance_count
   subnets                    = module.public_subnets.public_subnet_id
