@@ -132,7 +132,7 @@ module "alb" {
 
   name                       = "alb"
   enable                     = true
-  internal                   = false
+  internal                   = true
   load_balancer_type         = "application"
   instance_count             = module.ec2.instance_count
   security_groups            = [module.ssh.security_group_ids, module.http_https.security_group_ids]
