@@ -131,7 +131,7 @@ module "alb" {
   source = "./../../"
 
   name                       = "alb"
-  enable                     = true
+  enable                     = false
   internal                   = true
   load_balancer_type         = "application"
   instance_count             = module.ec2.instance_count

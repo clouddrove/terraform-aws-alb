@@ -129,7 +129,7 @@ module "clb" {
 
   name               = "clb"
   load_balancer_type = "classic"
-  clb_enable         = true
+  clb_enable         = false
   internal           = true
   target_id          = module.ec2.instance_id
   security_groups    = [module.ssh.security_group_ids, module.http_https.security_group_ids]
