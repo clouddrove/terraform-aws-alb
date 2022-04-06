@@ -65,8 +65,8 @@ variable "instance_count" {
 }
 
 variable "internal" {
-  type        = bool
-  default     = true
+  type        = string
+  default     = ""
   description = "If true, the LB will be internal."
 }
 
