@@ -129,7 +129,7 @@ module "nlb" {
   source = "./../../"
 
   name                       = "nlb"
-  enable                     = false
+  enable                     = true
   internal                   = true
   load_balancer_type         = "network"
   instance_count             = module.ec2.instance_count
