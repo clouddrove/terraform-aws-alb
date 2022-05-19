@@ -354,3 +354,20 @@ variable "access_logs" {
   default     = false
   description = "Access logs Enable or Disable."
 }
+
+variable "listener_https_fixed_response" {
+  description = "Have the HTTPS listener return a fixed response for the default action."
+  type = object({
+    content_type = string
+    message_body = string
+    status_code  = string
+  })
+  default = null
+}
+
+variable "https_listener_rules" {
+  description = "A list of maps describing the Listener Rules for this ALB. Required key/values: actions, conditions. Optional key/values: priority, https_listener_index (default to https_listeners[count.index])"
+  type        = any
+  default     = []
+}
+

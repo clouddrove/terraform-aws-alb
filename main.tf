@@ -48,11 +48,14 @@ resource "aws_lb" "main" {
     for_each = var.subnet_mapping
 
     content {
-      subnet_id     = subnet_mapping.value.subnet_id
-      allocation_id = lookup(subnet_mapping.value, "allocation_id", null)
+      subnet_id            = subnet_mapping.value.subnet_id
+      allocation_id        = lookup(subnet_mapping.value, "allocation_id", null)
+      private_ipv4_address = lookup(subnet_mapping.value, "private_ipv4_address", null)
+      ipv6_address         = lookup(subnet_mapping.value, "ipv6_address", null)
     }
   }
 }
+
 
 # Module      : LOAD BALANCER LISTENER HTTPS
 # Description : Provides a Load Balancer Listener resource.
@@ -67,6 +70,15 @@ resource "aws_lb_listener" "https" {
   default_action {
     target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
     type             = var.listener_type
+
+    dynamic "fixed_response" {
+      for_each = var.listener_https_fixed_response != null ? [var.listener_https_fixed_response] : []
+      content {
+        content_type = fixed_response.value["content_type"]
+        message_body = fixed_response.value["message_body"]
+        status_code  = fixed_response.value["status_code"]
+      }
+    }
   }
 }
 
@@ -132,6 +144,8 @@ resource "aws_lb_target_group" "main" {
   slow_start                         = lookup(var.target_groups[count.index], "slow_start", null)
   proxy_protocol_v2                  = lookup(var.target_groups[count.index], "proxy_protocol_v2", null)
   lambda_multi_value_headers_enabled = lookup(var.target_groups[count.index], "lambda_multi_value_headers_enabled", null)
+  preserve_client_ip                 = lookup(var.target_groups[count.index], "preserve_client_ip", null)
+  load_balancing_algorithm_type      = lookup(var.target_groups[count.index], "load_balancing_algorithm_type", null)
   dynamic "health_check" {
     for_each = length(keys(lookup(var.target_groups[count.index], "health_check", {}))) == 0 ? [] : [lookup(var.target_groups[count.index], "health_check", {})]
 
