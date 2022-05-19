@@ -43,7 +43,7 @@ usage : |-
   ```hcl
     module "alb" {
       source                     = "clouddrove/alb/aws"
-      version                    = "0.15.0"
+      version                    = "1.0.1"
       name                       = "alb"
       internal                   = false
       load_balancer_type         = "application"
@@ -85,7 +85,7 @@ usage : |-
   ```hcl
     module "alb" {
       source                     = "clouddrove/alb/aws"
-      version                    = "0.15.0"
+      version                    = "1.0.1"
       name                       = "nlb"
       internal                   = false
       load_balancer_type         = "application"
@@ -130,7 +130,7 @@ usage : |-
   ```hcl
     module "clb" {
     source                     = "clouddrove/alb/aws"
-    version                    = "0.15.0"
+    version                    = "1.0.1"
     name                       = "clb"
 
     load_balancer_type = "classic"
