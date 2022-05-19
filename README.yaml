@@ -26,7 +26,8 @@ badges:
     url: "https://github.com/clouddrove/terraform-aws-alb/actions/workflows/tfsec.yml"
   - name: "static-checks"
     image: "https://github.com/clouddrove/terraform-aws-alb/actions/workflows/terraform.yml/badge.svg"
-     url: "https://github.com/clouddrove/terraform-aws-alb/actions/workflows/terraform.yml"
+    url: "https://github.com/clouddrove/terraform-aws-alb/actions/workflows/terraform.yml"
+
 
 #  description of this project
 description: |-
