@@ -14,10 +14,16 @@
 <p align="center">
 
 <a href="https://www.terraform.io">
-  <img src="https://img.shields.io/badge/Terraform-v0.15-green" alt="Terraform">
+  <img src="https://img.shields.io/badge/Terraform-v1.1.7-green" alt="Terraform">
 </a>
 <a href="LICENSE.md">
-  <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="Licence">
+  <img src="https://img.shields.io/badge/License-APACHE-blue.svg" alt="Licence">
+</a>
+<a href="https://github.com/clouddrove/terraform-aws-alb/actions/workflows/tfsec.yml">
+  <img src="https://github.com/clouddrove/terraform-aws-alb/actions/workflows/tfsec.yml/badge.svg" alt="tfsec">
+</a>
+<a href="https://github.com/clouddrove/terraform-aws-alb/actions/workflows/terraform.yml">
+  <img src="https://github.com/clouddrove/terraform-aws-alb/actions/workflows/terraform.yml/badge.svg" alt="static-checks">
 </a>
 
 
@@ -51,7 +57,7 @@ We have [*fifty plus terraform modules*][terraform_modules]. A few of them are c
 
 This module has a few dependencies: 
 
-- [Terraform 0.13](https://learn.hashicorp.com/terraform/getting-started/install.html)
+- [Terraform 1.x.x](https://learn.hashicorp.com/terraform/getting-started/install.html)
 - [Go](https://golang.org/doc/install)
 - [github.com/stretchr/testify/assert](https://github.com/stretchr/testify)
 - [github.com/gruntwork-io/terratest/modules/terraform](https://github.com/gruntwork-io/terratest)
@@ -73,7 +79,7 @@ Here are examples of how you can use this module in your inventory structure:
 ```hcl
   module "alb" {
     source                     = "clouddrove/alb/aws"
-    version                    = "0.15.0"
+    version                    = "1.0.1"
     name                       = "alb"
     internal                   = false
     load_balancer_type         = "application"
@@ -115,7 +121,7 @@ Here are examples of how you can use this module in your inventory structure:
 ```hcl
   module "alb" {
     source                     = "clouddrove/alb/aws"
-    version                    = "0.15.0"
+    version                    = "1.0.1"
     name                       = "nlb"
     internal                   = false
     load_balancer_type         = "application"
@@ -160,7 +166,7 @@ Here are examples of how you can use this module in your inventory structure:
 ```hcl
   module "clb" {
   source                     = "clouddrove/alb/aws"
-  version                    = "0.15.0"
+  version                    = "1.0.1"
   name                       = "clb"
 
   load_balancer_type = "classic"
@@ -227,6 +233,7 @@ Here are examples of how you can use this module in your inventory structure:
 | http\_port | The port on which the load balancer is listening. like 80 or 443. | `number` | `80` | no |
 | http\_tcp\_listeners | A list of maps describing the HTTP listeners for this ALB. Required key/values: port, protocol. Optional key/values: target\_group\_index (defaults to 0) | `list(map(string))` | `[]` | no |
 | https\_enabled | A boolean flag to enable/disable HTTPS listener. | `bool` | `true` | no |
+| https\_listener\_rules | A list of maps describing the Listener Rules for this ALB. Required key/values: actions, conditions. Optional key/values: priority, https\_listener\_index (default to https\_listeners[count.index]) | `any` | `[]` | no |
 | https\_listeners | A list of maps describing the HTTPS listeners for this ALB. Required key/values: port, certificate\_arn. Optional key/values: ssl\_policy (defaults to ELBSecurityPolicy-2016-08), target\_group\_index (defaults to 0) | `list(map(string))` | `[]` | no |
 | https\_port | The port on which the load balancer is listening. like 80 or 443. | `number` | `443` | no |
 | idle\_timeout | The time in seconds that the connection is allowed to be idle. | `number` | `60` | no |
@@ -235,6 +242,7 @@ Here are examples of how you can use this module in your inventory structure:
 | ip\_address\_type | The type of IP addresses used by the subnets for your load balancer. The possible values are ipv4 and dualstack. | `string` | `"ipv4"` | no |
 | label\_order | Label order, e.g. `name`,`application`. | `list(any)` | <pre>[<br>  "name",<br>  "environment"<br>]</pre> | no |
 | listener\_certificate\_arn | The ARN of the SSL server certificate. Exactly one certificate is required if the protocol is HTTPS. | `string` | `""` | no |
+| listener\_https\_fixed\_response | Have the HTTPS listener return a fixed response for the default action. | <pre>object({<br>    content_type = string<br>    message_body = string<br>    status_code  = string<br>  })</pre> | `null` | no |
 | listener\_protocol | The protocol for connections from clients to the load balancer. Valid values are TCP, HTTP and HTTPS. Defaults to HTTP. | `string` | `"HTTPS"` | no |
 | listener\_type | The type of routing action. Valid values are forward, redirect, fixed-response, authenticate-cognito and authenticate-oidc. | `string` | `"forward"` | no |
 | listeners | A list of listener configurations for the ELB. | <pre>list(object({<br>    lb_port : number<br>    lb_protocol : string<br>    instance_port : number<br>    instance_protocol : string<br>    ssl_certificate_id : string<br>  }))</pre> | `[]` | no |
