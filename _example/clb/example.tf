@@ -117,7 +117,7 @@ module "ec2" {
   instance_profile_enabled = true
   iam_instance_profile     = module.iam-role.name
 
-  
+
   ebs_optimized      = false
   ebs_volume_enabled = true
   ebs_volume_type    = "gp2"

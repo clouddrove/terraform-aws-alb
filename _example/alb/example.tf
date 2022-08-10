@@ -63,7 +63,7 @@ module "iam-role" {
   version = "1.0.1"
 
   name        = "iam-role"
-  environment = "test"
+  environment = "tested"
   label_order = ["name", "environment"]
 
   assume_role_policy = data.aws_iam_policy_document.default.json
@@ -119,7 +119,7 @@ module "ec2" {
   instance_profile_enabled = true
   iam_instance_profile     = module.iam-role.name
 
- 
+
   ebs_optimized      = false
   ebs_volume_enabled = true
   ebs_volume_type    = "gp2"
@@ -138,6 +138,7 @@ module "alb" {
   security_groups            = [module.ssh.security_group_ids, module.http_https.security_group_ids]
   subnets                    = module.public_subnets.public_subnet_id
   enable_deletion_protection = false
+  with_target_group          = true
 
   target_id = module.ec2.instance_id
   vpc_id    = module.vpc.vpc_id
