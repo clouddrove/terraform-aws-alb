@@ -63,7 +63,7 @@ module "iam-role" {
   version = "1.0.1"
 
   name        = "iam-role"
-  environment = "tested"
+  environment = "test"
   label_order = ["name", "environment"]
 
   assume_role_policy = data.aws_iam_policy_document.default.json
