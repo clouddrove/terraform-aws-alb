@@ -135,6 +135,7 @@ module "nlb" {
   instance_count             = module.ec2.instance_count
   subnets                    = module.public_subnets.public_subnet_id
   enable_deletion_protection = false
+  with_target_group          = true
 
   target_id = module.ec2.instance_id
   vpc_id    = module.vpc.vpc_id

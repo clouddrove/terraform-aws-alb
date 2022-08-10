@@ -134,6 +134,7 @@ module "clb" {
   target_id          = module.ec2.instance_id
   security_groups    = [module.ssh.security_group_ids, module.http_https.security_group_ids]
   subnets            = module.public_subnets.public_subnet_id
+  with_target_group  = true
 
   listeners = [
     {
