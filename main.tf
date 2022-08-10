@@ -60,7 +60,7 @@ resource "aws_lb" "main" {
 # Module      : LOAD BALANCER LISTENER HTTPS
 # Description : Provides a Load Balancer Listener resource.
 resource "aws_lb_listener" "https" {
-  count = var.enable == true && var.https_enabled == true && var.load_balancer_type == "application" ? 1 : 0
+  count = var.enable == true && var.with_target_group && var.https_enabled == true && var.load_balancer_type == "application" ? 1 : 0
 
   load_balancer_arn = element(aws_lb.main.*.arn, count.index)
   port              = var.https_port
@@ -85,7 +85,7 @@ resource "aws_lb_listener" "https" {
 # Module      : LOAD BALANCER LISTENER HTTP
 # Description : Provides a Load Balancer Listener resource.
 resource "aws_lb_listener" "http" {
-  count = var.enable == true && var.http_enabled == true && var.load_balancer_type == "application" ? 1 : 0
+  count = var.enable == true && var.with_target_group && var.http_enabled == true && var.load_balancer_type == "application" ? 1 : 0
 
   load_balancer_arn = element(aws_lb.main.*.arn, count.index)
   port              = var.http_port
@@ -104,7 +104,7 @@ resource "aws_lb_listener" "http" {
 # Module      : LOAD BALANCER LISTENER HTTPS
 # Description : Provides a Load Balancer Listener resource.
 resource "aws_lb_listener" "nhttps" {
-  count = var.enable == true && var.https_enabled == true && var.load_balancer_type == "network" ? length(var.https_listeners) : 0
+  count = var.enable == true && var.with_target_group && var.https_enabled == true && var.load_balancer_type == "network" ? length(var.https_listeners) : 0
 
   load_balancer_arn = element(aws_lb.main.*.arn, count.index)
   port              = var.https_listeners[count.index]["port"]
@@ -120,7 +120,7 @@ resource "aws_lb_listener" "nhttps" {
 # Module      : LOAD BALANCER LISTENER HTTP
 # Description : Provides a Load Balancer Listener resource.
 resource "aws_lb_listener" "nhttp" {
-  count = var.enable == true && var.load_balancer_type == "network" ? length(var.http_tcp_listeners) : 0
+  count = var.enable == true && var.with_target_group && var.load_balancer_type == "network" ? length(var.http_tcp_listeners) : 0
 
   load_balancer_arn = element(aws_lb.main.*.arn, 0)
   port              = var.http_tcp_listeners[count.index]["port"]
@@ -134,7 +134,7 @@ resource "aws_lb_listener" "nhttp" {
 # Module      : LOAD BALANCER TARGET GROUP
 # Description : Provides a Target Group resource for use with Load Balancer resources.
 resource "aws_lb_target_group" "main" {
-  count                              = var.enable ? length(var.target_groups) : 0
+  count                              = var.enable && var.with_target_group ? length(var.target_groups) : 0
   name                               = format("%s-%s", module.labels.id, count.index)
   port                               = lookup(var.target_groups[count.index], "backend_port", null)
   protocol                           = lookup(var.target_groups[count.index], "backend_protocol", null) != null ? upper(lookup(var.target_groups[count.index], "backend_protocol")) : null
@@ -177,7 +177,7 @@ resource "aws_lb_target_group" "main" {
 # Description : Provides the ability to register instances and containers with an
 #               Application Load Balancer (ALB) or Network Load Balancer (NLB) target group.
 resource "aws_lb_target_group_attachment" "attachment" {
-  count = var.enable && var.load_balancer_type == "application" && var.target_type == "" ? var.instance_count : 0
+  count = var.enable && var.with_target_group && var.load_balancer_type == "application" && var.target_type == "" ? var.instance_count : 0
 
   target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
   target_id        = element(var.target_id, count.index)
@@ -185,7 +185,7 @@ resource "aws_lb_target_group_attachment" "attachment" {
 }
 
 resource "aws_lb_target_group_attachment" "nattachment" {
-  count = var.enable && var.load_balancer_type == "network" ? length(var.https_listeners) : 0
+  count = var.enable && var.with_target_group && var.load_balancer_type == "network" ? length(var.https_listeners) : 0
 
   target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
   target_id        = element(var.target_id, 0)
