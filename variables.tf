@@ -371,10 +371,3 @@ variable "https_listener_rules" {
   default     = []
 }
 
-variable "with_target_group" {
-  type        = bool
-  default     = true
-  description = "Create LoadBlancer without target group"
-}
-
-
