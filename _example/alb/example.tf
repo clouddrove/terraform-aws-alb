@@ -126,7 +126,6 @@ module "ec2" {
   ebs_volume_size    = 30
 }
 
-
 module "alb" {
   source = "./../../"
 
