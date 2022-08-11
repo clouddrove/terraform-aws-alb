@@ -265,6 +265,7 @@ Here are examples of how you can use this module in your inventory structure:
 | target\_id | The ID of the target. This is the Instance ID for an instance, or the container ID for an ECS container. If the target type is ip, specify an IP address. | `list(any)` | n/a | yes |
 | target\_type | The type of target that you must specify when registering targets with this target group. | `string` | `""` | no |
 | vpc\_id | The identifier of the VPC in which to create the target group. | `string` | `""` | no |
+| with\_target\_group | Create LoadBlancer without target group | `bool` | `true` | no |
 
 ## Outputs
 
