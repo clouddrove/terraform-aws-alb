@@ -79,7 +79,7 @@ Here are examples of how you can use this module in your inventory structure:
 ```hcl
   module "alb" {
     source                     = "clouddrove/alb/aws"
-    version                    = "1.0.1"
+    version                    = "1.3.0"
     name                       = "alb"
     internal                   = false
     load_balancer_type         = "application"
@@ -121,7 +121,7 @@ Here are examples of how you can use this module in your inventory structure:
 ```hcl
   module "alb" {
     source                     = "clouddrove/alb/aws"
-    version                    = "1.0.1"
+    version                    = "1.3.0"
     name                       = "nlb"
     internal                   = false
     load_balancer_type         = "application"
@@ -166,7 +166,7 @@ Here are examples of how you can use this module in your inventory structure:
 ```hcl
   module "clb" {
   source                     = "clouddrove/alb/aws"
-  version                    = "1.0.1"
+  version                    = "1.3.0"
   name                       = "clb"
 
   load_balancer_type = "classic"
