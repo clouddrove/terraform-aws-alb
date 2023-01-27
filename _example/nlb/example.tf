@@ -4,7 +4,7 @@ provider "aws" {
 
 module "vpc" {
   source  = "clouddrove/vpc/aws"
-  version = "0.15.1"
+  version = "1.3.0"
 
   name        = "vpc"
   environment = "test"
@@ -15,7 +15,7 @@ module "vpc" {
 
 module "public_subnets" {
   source  = "clouddrove/subnet/aws"
-  version = "0.15.3"
+  version = "1.3.0"
 
   name        = "public-subnet"
   environment = "test"
@@ -31,7 +31,7 @@ module "public_subnets" {
 
 module "http-https" {
   source  = "clouddrove/security-group/aws"
-  version = "1.0.1"
+  version = "1.3.0"
 
   name        = "http-https"
   environment = "test"
@@ -45,7 +45,7 @@ module "http-https" {
 
 module "ssh" {
   source  = "clouddrove/security-group/aws"
-  version = "1.0.1"
+  version = "1.3.0"
 
   name        = "ssh"
   environment = "test"
@@ -58,7 +58,7 @@ module "ssh" {
 
 module "iam-role" {
   source  = "clouddrove/iam-role/aws"
-  version = "1.0.1"
+  version = "1.3.0"
 
   name        = "iam-role"
   environment = "test"
@@ -96,7 +96,7 @@ data "aws_iam_policy_document" "iam-policy" {
 
 module "ec2" {
   source  = "clouddrove/ec2/aws"
-  version = "1.0.1"
+  version = "1.3.0"
 
   name        = "ec2-instance"
   environment = "test"
@@ -117,7 +117,6 @@ module "ec2" {
   instance_profile_enabled = true
   iam_instance_profile     = module.iam-role.name
 
-  disk_size          = 8
   ebs_optimized      = false
   ebs_volume_enabled = true
   ebs_volume_type    = "gp2"
