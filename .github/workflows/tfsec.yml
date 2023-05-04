@@ -4,18 +4,18 @@ on:
 
 jobs:
   tfsec:
-    name: Terraform Security Scan
+    name: tfsec sarif report
     runs-on: ubuntu-latest
 
     steps:
       - name: Clone repo
         uses: actions/checkout@master
 
-      - name: tfsec Basic
+      - name: tfsec
         uses: aquasecurity/tfsec-sarif-action@v0.1.0
         with:
           sarif_file: tfsec.sarif
-          working_directory: ./_example/
+          working_directory: ./_example
           full_repo_scan: true
 
       - name: Upload SARIF file
