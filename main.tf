@@ -68,7 +68,7 @@ resource "aws_lb_listener" "https" {
   ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
   certificate_arn   = var.listener_certificate_arn
   default_action {
-    target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
+    target_group_arn = join("", aws_lb_target_group.main.*.arn)
     type             = var.listener_type
 
     dynamic "fixed_response" {
