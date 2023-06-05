@@ -1,7 +1,13 @@
+##---------------------------------------------------------------------------------------------------------------------------
+## Provider block added, Use the Amazon Web Services (AWS) provider to interact with the many resources supported by AWS.
+##--------------------------------------------------------------------------------------------------------------------------
 provider "aws" {
   region = "eu-west-1"
 }
 
+##---------------------------------------------------------------------------------------------------------------------------
+## A VPC is a virtual network that closely resembles a traditional network that you'd operate in your own data center.
+##--------------------------------------------------------------------------------------------------------------------------
 module "vpc" {
   source  = "clouddrove/vpc/aws"
   version = "1.3.1"
@@ -13,6 +19,9 @@ module "vpc" {
   cidr_block = "172.16.0.0/16"
 }
 
+##-----------------------------------------------------
+## A subnet is a range of IP addresses in your VPC.
+##-----------------------------------------------------
 module "public_subnets" {
   source  = "clouddrove/subnet/aws"
   version = "1.3.0"
@@ -29,6 +38,9 @@ module "public_subnets" {
   ipv6_cidr_block    = module.vpc.ipv6_cidr_block
 }
 
+##-----------------------------------------------------
+## An AWS security group acts as a virtual firewall for incoming and outgoing traffic with http-https.
+##-----------------------------------------------------
 module "http-https" {
   source  = "clouddrove/security-group/aws"
   version = "1.3.0"
@@ -43,6 +55,9 @@ module "http-https" {
   allowed_ports = [80, 443]
 }
 
+##-----------------------------------------------------
+## An AWS security group acts as a virtual firewall for incoming and outgoing traffic with ssh.
+##-----------------------------------------------------
 module "ssh" {
   source  = "clouddrove/security-group/aws"
   version = "1.3.0"
@@ -56,6 +71,9 @@ module "ssh" {
   allowed_ports = [22]
 }
 
+##-----------------------------------------------------
+## When your trusted identities assume IAM roles, they are granted only the permissions scoped by those IAM roles.
+##-----------------------------------------------------
 module "iam-role" {
   source  = "clouddrove/iam-role/aws"
   version = "1.3.0"
@@ -94,6 +112,9 @@ data "aws_iam_policy_document" "iam-policy" {
   }
 }
 
+##-----------------------------------------------------
+## Amazon EC2 provides cloud hosted virtual machines, called "instances", to run applications.
+##-----------------------------------------------------
 module "ec2" {
   source  = "clouddrove/ec2/aws"
   version = "1.3.0"
@@ -123,7 +144,9 @@ module "ec2" {
   ebs_volume_size    = 30
 }
 
-
+##-----------------------------------------------------------------------------
+## nlb module call.
+##-----------------------------------------------------------------------------
 module "nlb" {
   source = "./../../"
 

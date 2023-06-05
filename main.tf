@@ -1,11 +1,6 @@
-## Managed By : CloudDrove
-## Description : This Script is used to create Aws Loadbalancer,Aws Loadbalancer Listeners.
-## Copyright @ CloudDrove. All Right Reserved.
-
-#Module      : label
-#Description : This terraform module is designed to generate consistent label names and
-#              tags for resources. You can use terraform-labels to implement a strict
-#              naming convention.
+##-----------------------------------------------------------------------------
+## Labels module callled that will be used for naming and tags.
+##-----------------------------------------------------------------------------
 module "labels" {
   source  = "clouddrove/labels/aws"
   version = "1.3.0"
@@ -17,8 +12,9 @@ module "labels" {
   label_order = var.label_order
 }
 
-# Module      : APPLICATION LOAD BALANCER
-# Description : This terraform module is used to create ALB on AWS.
+##-----------------------------------------------------------------------------
+## A load balancer serves as the single point of contact for clients. The load balancer distributes incoming application traffic across multiple targets.
+##-----------------------------------------------------------------------------
 resource "aws_lb" "main" {
   count                            = var.enable ? 1 : 0
   name                             = module.labels.id
@@ -56,9 +52,10 @@ resource "aws_lb" "main" {
   }
 }
 
-
-# Module      : LOAD BALANCER LISTENER HTTPS
-# Description : Provides a Load Balancer Listener resource.
+##-----------------------------------------------------------------------------
+## A listener is a process that checks for connection requests.
+## It is configured with a protocol and a port for front-end (client to load balancer) connections, and a protocol and a port for back-end (load balancer to back-end instance) connections.
+##-----------------------------------------------------------------------------
 resource "aws_lb_listener" "https" {
   count = var.enable == true && var.with_target_group && var.https_enabled == true && var.load_balancer_type == "application" ? 1 : 0
 
@@ -82,8 +79,10 @@ resource "aws_lb_listener" "https" {
   }
 }
 
-# Module      : LOAD BALANCER LISTENER HTTP
-# Description : Provides a Load Balancer Listener resource.
+##-----------------------------------------------------------------------------
+## A listener is a process that checks for connection requests.
+## It is configured with a protocol and a port for front-end (client to load balancer) connections, and a protocol and a port for back-end (load balancer to back-end instance) connections.
+##-----------------------------------------------------------------------------
 resource "aws_lb_listener" "http" {
   count = var.enable == true && var.with_target_group && var.http_enabled == true && var.load_balancer_type == "application" ? 1 : 0
 
@@ -101,8 +100,10 @@ resource "aws_lb_listener" "http" {
   }
 }
 
-# Module      : LOAD BALANCER LISTENER HTTPS
-# Description : Provides a Load Balancer Listener resource.
+##-----------------------------------------------------------------------------
+## A listener is a process that checks for connection requests.
+## It is configured with a protocol and a port for front-end (client to load balancer) connections, and a protocol and a port for back-end (load balancer to back-end instance) connections.
+##-----------------------------------------------------------------------------
 resource "aws_lb_listener" "nhttps" {
   count = var.enable == true && var.with_target_group && var.https_enabled == true && var.load_balancer_type == "network" ? length(var.https_listeners) : 0
 
@@ -117,8 +118,10 @@ resource "aws_lb_listener" "nhttps" {
   }
 }
 
-# Module      : LOAD BALANCER LISTENER HTTP
-# Description : Provides a Load Balancer Listener resource.
+##-----------------------------------------------------------------------------
+## A listener is a process that checks for connection requests.
+## It is configured with a protocol and a port for front-end (client to load balancer) connections, and a protocol and a port for back-end (load balancer to back-end instance) connections.
+##-----------------------------------------------------------------------------
 resource "aws_lb_listener" "nhttp" {
   count = var.enable == true && var.with_target_group && var.load_balancer_type == "network" ? length(var.http_tcp_listeners) : 0
 
@@ -131,8 +134,9 @@ resource "aws_lb_listener" "nhttp" {
   }
 }
 
-# Module      : LOAD BALANCER TARGET GROUP
-# Description : Provides a Target Group resource for use with Load Balancer resources.
+##-----------------------------------------------------------------------------
+## aws_lb_target_group. Provides a Target Group resource for use with Load Balancer resources.
+##-----------------------------------------------------------------------------
 resource "aws_lb_target_group" "main" {
   count                              = var.enable && var.with_target_group ? length(var.target_groups) : 0
   name                               = format("%s-%s", module.labels.id, count.index)
@@ -173,9 +177,9 @@ resource "aws_lb_target_group" "main" {
   }
 }
 
-# Module      : TARGET GROUP ATTACHMENT
-# Description : Provides the ability to register instances and containers with an
-#               Application Load Balancer (ALB) or Network Load Balancer (NLB) target group.
+##-----------------------------------------------------------------------------
+## For attaching resources with Elastic Load Balancer (ELB), see the aws_elb_attachment resource.
+##-----------------------------------------------------------------------------
 resource "aws_lb_target_group_attachment" "attachment" {
   count = var.enable && var.with_target_group && var.load_balancer_type == "application" && var.target_type == "" ? var.instance_count : 0
 
@@ -192,9 +196,9 @@ resource "aws_lb_target_group_attachment" "nattachment" {
   port             = lookup(var.target_groups[count.index], "backend_port", null)
 }
 
-
-# Module      : Classic LOAD BALANCER
-# Description : This terraform module is used to create classic Load Balancer on AWS.
+##-----------------------------------------------------------------------------
+## Elastic Load Balancing (ELB) automatically distributes incoming application traffic across multiple targets and virtual appliances in one or more Availability Zones (AZs)
+##-----------------------------------------------------------------------------
 resource "aws_elb" "main" {
   count = var.clb_enable && var.load_balancer_type == "classic" == true ? 1 : 0
 
