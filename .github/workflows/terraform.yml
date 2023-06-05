@@ -31,7 +31,9 @@ jobs:
           - ${{ needs.versionExtract.outputs.minVersion }}
           - ${{ needs.versionExtract.outputs.maxVersion }}
         directory:
-          - _example/
+          - _example/alb
+          - _example/clb
+          - _example/nlb
 
     steps:
       - name: Checkout
