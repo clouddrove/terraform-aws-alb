@@ -147,6 +147,22 @@ module "ec2" {
   ebs_volume_size    = 30
 }
 
+module "acm" {
+  source  = "clouddrove/acm/aws"
+  version = "1.3.0"
+
+  name        = "certificate"
+  environment = "test"
+  label_order = ["name", "environment"]
+
+  enable_aws_certificate    = true
+  domain_name               = "clouddrove.ca"
+  subject_alternative_names = ["*.clouddrove.ca"]
+  validation_method         = "DNS"
+  enable_dns_validation     = false
+}
+
+
 ##-----------------------------------------------------------------------------
 ## alb module call.
 ##-----------------------------------------------------------------------------
@@ -170,7 +186,7 @@ module "alb" {
   http_enabled             = true
   https_port               = 443
   listener_type            = "forward"
-  listener_certificate_arn = "arn:aws:acm:eu-west-1:924144197303:certificate/0418d2ba-91f7-4196-991b-28b5c60cd4cf"
+  listener_certificate_arn = module.acm.arn
   target_group_port        = 80
 
   target_groups = [
