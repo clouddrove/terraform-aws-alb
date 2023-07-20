@@ -31,9 +31,9 @@ module "public_subnets" {
   label_order = ["name", "environment"]
 
   availability_zones = ["eu-west-1b", "eu-west-1c"]
+  type               = "public"
   vpc_id             = module.vpc.vpc_id
   cidr_block         = module.vpc.vpc_cidr_block
-  type               = "public"
   igw_id             = module.vpc.igw_id
   ipv6_cidr_block    = module.vpc.ipv6_cidr_block
 }
@@ -83,9 +83,8 @@ module "iam-role" {
   label_order = ["name", "environment"]
 
   assume_role_policy = data.aws_iam_policy_document.default.json
-
-  policy_enabled = true
-  policy         = data.aws_iam_policy_document.iam-policy.json
+  policy_enabled     = true
+  policy             = data.aws_iam_policy_document.iam-policy.json
 }
 
 data "aws_iam_policy_document" "default" {
@@ -123,21 +122,17 @@ module "ec2" {
   environment = "test"
   label_order = ["name", "environment"]
 
-  instance_count = 2
-  ami            = "ami-08d658f84a6d84a80"
-  instance_type  = "t2.nano"
-  monitoring     = false
-  tenancy        = "default"
-
+  instance_count              = 2
+  ami                         = "ami-08d658f84a6d84a80"
+  instance_type               = "t2.nano"
+  monitoring                  = false
+  tenancy                     = "default"
   vpc_security_group_ids_list = [module.ssh.security_group_ids, module.http_https.security_group_ids]
   subnet_ids                  = tolist(module.public_subnets.public_subnet_id)
-
+  iam_instance_profile        = module.iam-role.name
   assign_eip_address          = true
   associate_public_ip_address = true
-
-  instance_profile_enabled = true
-  iam_instance_profile     = module.iam-role.name
-
+  instance_profile_enabled    = true
 
   ebs_optimized      = false
   ebs_volume_enabled = true
@@ -159,8 +154,6 @@ module "clb" {
   security_groups    = [module.ssh.security_group_ids, module.http_https.security_group_ids]
   subnets            = module.public_subnets.public_subnet_id
   with_target_group  = true
-
-
   listeners = [
     {
       lb_port            = 22000
@@ -177,7 +170,6 @@ module "clb" {
       ssl_certificate_id = null
     }
   ]
-
   health_check_target              = "TCP:4444"
   health_check_timeout             = 10
   health_check_interval            = 30
