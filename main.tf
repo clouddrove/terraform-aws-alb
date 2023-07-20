@@ -168,7 +168,6 @@ resource "aws_lb_target_group" "main" {
 
   dynamic "stickiness" {
     for_each = length(keys(lookup(var.target_groups[count.index], "stickiness", {}))) == 0 ? [] : [lookup(var.target_groups[count.index], "stickiness", {})]
-
     content {
       enabled         = lookup(stickiness.value, "enabled", null)
       cookie_duration = lookup(stickiness.value, "cookie_duration", null)
@@ -211,7 +210,6 @@ resource "aws_elb" "main" {
   connection_draining_timeout = var.connection_draining_timeout
   security_groups             = var.security_groups
   subnets                     = var.subnets
-
   dynamic "listener" {
     for_each = var.listeners
     content {
@@ -230,6 +228,5 @@ resource "aws_elb" "main" {
     unhealthy_threshold = var.health_check_unhealthy_threshold
     healthy_threshold   = var.health_check_healthy_threshold
   }
-
   tags = module.labels.tags
 }
