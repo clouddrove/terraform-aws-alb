@@ -44,7 +44,7 @@ module "public_subnets" {
 ##-----------------------------------------------------
 module "http_https" {
   source  = "clouddrove/security-group/aws"
-  version = "1.3.0"
+  version = "2.0.0"
 
   name        = "http-https"
   environment = "test"
@@ -61,7 +61,7 @@ module "http_https" {
 ##-----------------------------------------------------
 module "ssh" {
   source  = "clouddrove/security-group/aws"
-  version = "1.3.0"
+  version = "2.0.0"
 
   name        = "ssh"
   environment = "test"
