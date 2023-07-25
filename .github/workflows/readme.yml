@@ -5,7 +5,7 @@ on:
       - master
 
 jobs:
-  readme-create:
+  readme:
     name: 'readme-create'
     runs-on: ubuntu-latest
     steps:
@@ -24,7 +24,6 @@ jobs:
           github_token: '${{ secrets.GITHUB }}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 
       - name: 'pre-commit check errors'
         uses: pre-commit/action@v3.0.0

@@ -43,7 +43,7 @@ module "public_subnets" {
 ##-----------------------------------------------------
 module "http_https" {
   source  = "clouddrove/security-group/aws"
-  version = "1.3.0"
+  version = "2.0.0"
 
   name        = "http-https"
   environment = "test"
@@ -59,13 +59,11 @@ module "http_https" {
 ##-----------------------------------------------------
 module "ssh" {
   source  = "clouddrove/security-group/aws"
-  version = "1.3.0"
+  version = "2.0.0"
 
   name        = "ssh"
   environment = "test"
   label_order = ["name", "environment"]
-
-
   vpc_id        = module.vpc.vpc_id
   allowed_ip    = [module.vpc.vpc_cidr_block]
   allowed_ports = [22]
@@ -77,7 +75,6 @@ module "ssh" {
 module "iam-role" {
   source  = "clouddrove/iam-role/aws"
   version = "1.3.0"
-
   name        = "iam-role"
   environment = "test-test"
   label_order = ["name", "environment"]
@@ -142,7 +139,6 @@ module "ec2" {
 module "acm" {
   source  = "clouddrove/acm/aws"
   version = "1.3.0"
-
   name        = "certificate"
   environment = "test"
   label_order = ["name", "environment"]
