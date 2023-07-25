@@ -31,9 +31,9 @@ module "public_subnets" {
   label_order = ["name", "environment"]
 
   availability_zones = ["eu-west-1b", "eu-west-1c"]
+  type               = "public"
   vpc_id             = module.vpc.vpc_id
   cidr_block         = module.vpc.vpc_cidr_block
-  type               = "public"
   igw_id             = module.vpc.igw_id
   ipv6_cidr_block    = module.vpc.ipv6_cidr_block
 }
@@ -43,12 +43,11 @@ module "public_subnets" {
 ##-----------------------------------------------------
 module "http-https" {
   source  = "clouddrove/security-group/aws"
-  version = "1.3.0"
+  version = "2.0.0"
 
   name        = "http-https"
   environment = "test"
   label_order = ["name", "environment"]
-
 
   vpc_id        = module.vpc.vpc_id
   allowed_ip    = ["0.0.0.0/0"]
@@ -60,7 +59,7 @@ module "http-https" {
 ##-----------------------------------------------------
 module "ssh" {
   source  = "clouddrove/security-group/aws"
-  version = "1.3.0"
+  version = "2.0.0"
 
   name        = "ssh"
   environment = "test"
@@ -123,25 +122,21 @@ module "ec2" {
   environment = "test"
   label_order = ["name", "environment"]
 
-  instance_count = 1
-  ami            = "ami-08d658f84a6d84a80"
-  instance_type  = "t2.nano"
-  monitoring     = false
-  tenancy        = "default"
-
+  instance_count              = 1
+  ami                         = "ami-08d658f84a6d84a80"
+  instance_type               = "t2.nano"
+  monitoring                  = false
+  tenancy                     = "default"
   vpc_security_group_ids_list = [module.ssh.security_group_ids, module.http-https.security_group_ids]
   subnet_ids                  = tolist(module.public_subnets.public_subnet_id)
-
+  iam_instance_profile        = module.iam-role.name
   assign_eip_address          = true
   associate_public_ip_address = true
-
-  instance_profile_enabled = true
-  iam_instance_profile     = module.iam-role.name
-
-  ebs_optimized      = false
-  ebs_volume_enabled = true
-  ebs_volume_type    = "gp2"
-  ebs_volume_size    = 30
+  instance_profile_enabled    = true
+  ebs_optimized               = false
+  ebs_volume_enabled          = true
+  ebs_volume_type             = "gp2"
+  ebs_volume_size             = 30
 }
 
 ##-----------------------------------------------------------------------------
@@ -156,12 +151,10 @@ module "nlb" {
   load_balancer_type         = "network"
   instance_count             = module.ec2.instance_count
   subnets                    = module.public_subnets.public_subnet_id
+  target_id                  = module.ec2.instance_id
+  vpc_id                     = module.vpc.vpc_id
   enable_deletion_protection = false
   with_target_group          = true
-
-  target_id = module.ec2.instance_id
-  vpc_id    = module.vpc.vpc_id
-
   http_tcp_listeners = [
     {
       port               = 80
@@ -169,8 +162,6 @@ module "nlb" {
       target_group_index = 0
     },
   ]
-
-
   target_groups = [
     {
       backend_protocol = "TCP"
