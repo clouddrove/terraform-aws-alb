@@ -13,17 +13,14 @@
 
 <p align="center">
 
-<a href="https://www.terraform.io">
-  <img src="https://img.shields.io/badge/Terraform-v1.1.7-green" alt="Terraform">
-</a>
-<a href="LICENSE.md">
-  <img src="https://img.shields.io/badge/License-APACHE-blue.svg" alt="Licence">
+<a href="https://github.com/clouddrove/terraform-aws-alb/releases/latest">
+  <img src="https://img.shields.io/github/release/clouddrove/terraform-aws-alb.svg" alt="Latest Release">
 </a>
 <a href="https://github.com/clouddrove/terraform-aws-alb/actions/workflows/tfsec.yml">
   <img src="https://github.com/clouddrove/terraform-aws-alb/actions/workflows/tfsec.yml/badge.svg" alt="tfsec">
 </a>
-<a href="https://github.com/clouddrove/terraform-aws-alb/actions/workflows/terraform.yml">
-  <img src="https://github.com/clouddrove/terraform-aws-alb/actions/workflows/terraform.yml/badge.svg" alt="static-checks">
+<a href="LICENSE.md">
+  <img src="https://img.shields.io/badge/License-APACHE-blue.svg" alt="Licence">
 </a>
 
 
@@ -79,7 +76,7 @@ Here are examples of how you can use this module in your inventory structure:
 ```hcl
   module "alb" {
     source                     = "clouddrove/alb/aws"
-    version                    = "1.3.0"
+    version                    = "1.4.0"
     name                       = "alb"
     enable                     = true
     internal                   = true
@@ -87,19 +84,16 @@ Here are examples of how you can use this module in your inventory structure:
     instance_count             = module.ec2.instance_count
     security_groups            = [module.ssh.security_group_ids, module.http_https.security_group_ids]
     subnets                    = module.public_subnets.public_subnet_id
+    target_id                  = module.ec2.instance_id
+    vpc_id                     = module.vpc.vpc_id
+    listener_certificate_arn   = module.acm.arn
     enable_deletion_protection = false
     with_target_group          = true
-  
-    target_id = module.ec2.instance_id
-    vpc_id    = module.vpc.vpc_id
-  
-    https_enabled            = true
-    http_enabled             = true
-    https_port               = 443
-    listener_type            = "forward"
-    listener_certificate_arn = "arn:aws:acm:eu-west-1:924144197303:certificate/0418d2ba-91f7-4196-991b-28b5c60cd4cf"
-    target_group_port        = 80
-  
+    https_enabled              = true
+    http_enabled               = true
+    https_port                 = 443
+    listener_type              = "forward"
+    target_group_port          = 80
     target_groups = [
       {
         backend_protocol     = "HTTP"
@@ -126,19 +120,17 @@ Here are examples of how you can use this module in your inventory structure:
 ```hcl
   module "nlb" {
     source                     = "clouddrove/alb/aws"
-    version                    = "1.3.0"
+    version                    = "1.4.0"
     name                       = "nlb"
     enable                     = true
     internal                   = true
     load_balancer_type         = "network"
     instance_count             = module.ec2.instance_count
     subnets                    = module.public_subnets.public_subnet_id
+    target_id                  = module.ec2.instance_id
+    vpc_id                     = module.vpc.vpc_id
     enable_deletion_protection = false
     with_target_group          = true
-  
-    target_id = module.ec2.instance_id
-    vpc_id    = module.vpc.vpc_id
-  
     http_tcp_listeners = [
       {
         port               = 80
@@ -146,8 +138,6 @@ Here are examples of how you can use this module in your inventory structure:
         target_group_index = 0
       },
     ]
-  
-  
     target_groups = [
       {
         backend_protocol = "TCP"
@@ -167,33 +157,31 @@ Here are examples of how you can use this module in your inventory structure:
 ```hcl
   module "clb" {
   source                     = "clouddrove/alb/aws"
-  version                    = "1.3.0"
-  name               = "clb"
-  load_balancer_type = "classic"
-  clb_enable         = true
-  internal           = true
-  target_id          = module.ec2.instance_id
-  security_groups    = [module.ssh.security_group_ids, module.http_https.security_group_ids]
-  subnets            = module.public_subnets.public_subnet_id
-  with_target_group  = true
-
+  version                    = "1.4.0"
+  name                       = "clb"
+  load_balancer_type         = "classic"
+  clb_enable                 = true
+  internal                   = true
+  target_id                  = module.ec2.instance_id
+  security_groups            = [module.ssh.security_group_ids, module.http_https.security_group_ids]
+  subnets                    = module.public_subnets.public_subnet_id
+  with_target_group          = true
   listeners = [
     {
-      lb_port            = 22000
-      lb_protocol        = "TCP"
-      instance_port      = 22000
-      instance_protocol  = "TCP"
-      ssl_certificate_id = null
+      lb_port               = 22000
+      lb_protocol           = "TCP"
+      instance_port         = 22000
+      instance_protocol     = "TCP"
+      ssl_certificate_id    = null
     },
     {
-      lb_port            = 4444
-      lb_protocol        = "TCP"
-      instance_port      = 4444
-      instance_protocol  = "TCP"
-      ssl_certificate_id = null
+      lb_port              = 4444
+      lb_protocol          = "TCP"
+      instance_port        = 4444
+      instance_protocol    = "TCP"
+      ssl_certificate_id   = null
     }
   ]
-
   health_check_target              = "TCP:4444"
   health_check_timeout             = 10
   health_check_interval            = 30
