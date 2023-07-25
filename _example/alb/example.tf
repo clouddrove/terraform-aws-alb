@@ -76,7 +76,7 @@ module "iam-role" {
   source      = "clouddrove/iam-role/aws"
   version     = "1.3.0"
   name        = "iam-role"
-  environment = "test-test"
+  environment = "test"
   label_order = ["name", "environment"]
 
   assume_role_policy = data.aws_iam_policy_document.default.json
@@ -149,7 +149,6 @@ module "acm" {
   validation_method         = "DNS"
   enable_dns_validation     = false
 }
-
 
 ##-----------------------------------------------------------------------------
 ## alb module call.
