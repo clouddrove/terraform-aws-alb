@@ -1,5 +1,5 @@
 output "arn" {
-  value       = module.clb.*.clb_arn
+  value       = module.clb[*].clb_arn
   description = "The ARN suffix of the ALB"
 }
 

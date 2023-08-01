@@ -31,24 +31,6 @@ variable "label_order" {
   description = "Label order, e.g. `name`,`application`."
 }
 
-variable "attributes" {
-  type        = list(any)
-  default     = []
-  description = "Additional attributes (e.g. `1`)."
-}
-
-variable "delimiter" {
-  type        = string
-  default     = "-"
-  description = "Delimiter to be used between `organization`, `environment`, `name` and `attributes`."
-}
-
-variable "tags" {
-  type        = map(any)
-  default     = {}
-  description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
-}
-
 variable "managedby" {
   type        = string
   default     = "hello@clouddrove.com"
@@ -121,20 +103,6 @@ variable "enable_deletion_protection" {
   type        = bool
   default     = false
   description = "If true, deletion of the load balancer will be disabled via the AWS API. This will prevent Terraform from deleting the load balancer. Defaults to false."
-}
-
-variable "subnet_id" {
-  type        = string
-  default     = ""
-  description = "The id of the subnet of which to attach to the load balancer. You can specify only one subnet per Availability Zone."
-  sensitive   = true
-}
-
-variable "allocation_id" {
-  type        = string
-  default     = ""
-  description = "The allocation ID of the Elastic IP address."
-  sensitive   = true
 }
 
 variable "https_port" {
@@ -289,12 +257,6 @@ variable "listeners" {
   description = "A list of listener configurations for the ELB."
 }
 
-variable "enable_connection_draining" {
-  type        = bool
-  default     = false
-  description = "Whether or not to enable connection draining (\"true\" or \"false\")."
-}
-
 variable "connection_draining_timeout" {
   type        = number
   default     = 300
@@ -305,12 +267,6 @@ variable "connection_draining" {
   type        = bool
   default     = false
   description = "TBoolean to enable connection draining. Default: false."
-}
-
-variable "availability_zones" {
-  default     = []
-  type        = list(map(string))
-  description = "The AZ's to serve traffic in."
 }
 
 variable "health_check_target" {
@@ -363,12 +319,6 @@ variable "listener_https_fixed_response" {
     status_code  = string
   })
   default = null
-}
-
-variable "https_listener_rules" {
-  description = "A list of maps describing the Listener Rules for this ALB. Required key/values: actions, conditions. Optional key/values: priority, https_listener_index (default to https_listeners[count.index])"
-  type        = any
-  default     = []
 }
 
 variable "with_target_group" {

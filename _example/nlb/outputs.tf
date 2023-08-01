@@ -1,5 +1,5 @@
 output "arn" {
-  value       = module.nlb.*.arn
+  value       = module.nlb[*].arn
   description = "The ARN suffix of the ALB"
 }
 
