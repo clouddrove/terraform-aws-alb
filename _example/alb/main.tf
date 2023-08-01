@@ -24,7 +24,7 @@ module "vpc" {
 ##-----------------------------------------------------
 module "public_subnets" {
   source  = "clouddrove/subnet/aws"
-  version = "1.3.0"
+  version = "2.0.0"
 
   name        = "public-subnet"
   environment = "test"
@@ -41,7 +41,7 @@ module "public_subnets" {
 ##-----------------------------------------------------
 ## An AWS security group acts as a virtual firewall for incoming and outgoing traffic with http-https.
 ##-----------------------------------------------------
-module "http-https" {
+module "http_https" {
   source  = "clouddrove/security-group/aws"
   version = "2.0.0"
 
@@ -61,10 +61,9 @@ module "ssh" {
   source  = "clouddrove/security-group/aws"
   version = "2.0.0"
 
-  name        = "ssh"
-  environment = "test"
-  label_order = ["name", "environment"]
-
+  name          = "ssh"
+  environment   = "test"
+  label_order   = ["name", "environment"]
   vpc_id        = module.vpc.vpc_id
   allowed_ip    = [module.vpc.vpc_cidr_block]
   allowed_ports = [22]
@@ -74,17 +73,15 @@ module "ssh" {
 ## When your trusted identities assume IAM roles, they are granted only the permissions scoped by those IAM roles.
 ##-----------------------------------------------------
 module "iam-role" {
-  source  = "clouddrove/iam-role/aws"
-  version = "1.3.0"
-
+  source      = "clouddrove/iam-role/aws"
+  version     = "1.3.0"
   name        = "iam-role"
   environment = "test"
   label_order = ["name", "environment"]
 
   assume_role_policy = data.aws_iam_policy_document.default.json
-
-  policy_enabled = true
-  policy         = data.aws_iam_policy_document.iam-policy.json
+  policy_enabled     = true
+  policy             = data.aws_iam_policy_document.iam-policy.json
 }
 
 data "aws_iam_policy_document" "default" {
@@ -122,12 +119,12 @@ module "ec2" {
   environment = "test"
   label_order = ["name", "environment"]
 
-  instance_count              = 1
+  instance_count              = 2
   ami                         = "ami-08d658f84a6d84a80"
   instance_type               = "t2.nano"
-  monitoring                  = false
+  monitoring                  = true
   tenancy                     = "default"
-  vpc_security_group_ids_list = [module.ssh.security_group_ids, module.http-https.security_group_ids]
+  vpc_security_group_ids_list = [module.ssh.security_group_ids, module.http_https.security_group_ids]
   subnet_ids                  = tolist(module.public_subnets.public_subnet_id)
   iam_instance_profile        = module.iam-role.name
   assign_eip_address          = true
@@ -139,39 +136,60 @@ module "ec2" {
   ebs_volume_size             = 30
 }
 
+module "acm" {
+  source      = "clouddrove/acm/aws"
+  version     = "1.3.0"
+  name        = "certificate"
+  environment = "test"
+  label_order = ["name", "environment"]
+
+  enable_aws_certificate    = true
+  domain_name               = "clouddrove.ca"
+  subject_alternative_names = ["*.clouddrove.ca"]
+  validation_method         = "DNS"
+  enable_dns_validation     = false
+}
+
 ##-----------------------------------------------------------------------------
-## nlb module call.
+## alb module call.
 ##-----------------------------------------------------------------------------
-module "nlb" {
+module "alb" {
   source = "./../../"
 
-  name                       = "nlb"
+  name                       = "alb"
   enable                     = true
   internal                   = true
-  load_balancer_type         = "network"
+  load_balancer_type         = "application"
   instance_count             = module.ec2.instance_count
+  security_groups            = [module.ssh.security_group_ids, module.http_https.security_group_ids]
   subnets                    = module.public_subnets.public_subnet_id
   target_id                  = module.ec2.instance_id
   vpc_id                     = module.vpc.vpc_id
+  listener_certificate_arn   = module.acm.arn
   enable_deletion_protection = false
   with_target_group          = true
-  http_tcp_listeners = [
-    {
-      port               = 80
-      protocol           = "TCP"
-      target_group_index = 0
-    },
-  ]
+  https_enabled              = true
+  http_enabled               = true
+  https_port                 = 443
+  listener_type              = "forward"
+  target_group_port          = 80
   target_groups = [
     {
-      backend_protocol = "TCP"
-      backend_port     = 80
-      target_type      = "instance"
-    },
-    {
-      backend_protocol = "TLS"
-      backend_port     = 443
-      target_type      = "instance"
-    },
+      backend_protocol     = "HTTP"
+      backend_port         = 80
+      target_type          = "instance"
+      deregistration_delay = 300
+      health_check = {
+        enabled             = true
+        interval            = 30
+        path                = "/"
+        port                = "traffic-port"
+        healthy_threshold   = 3
+        unhealthy_threshold = 3
+        timeout             = 10
+        protocol            = "HTTP"
+        matcher             = "200-399"
+      }
+    }
   ]
 }

@@ -59,13 +59,13 @@ resource "aws_lb" "main" {
 resource "aws_lb_listener" "https" {
   count = var.enable == true && var.with_target_group && var.https_enabled == true && var.load_balancer_type == "application" ? 1 : 0
 
-  load_balancer_arn = element(aws_lb.main.*.arn, count.index)
+  load_balancer_arn = element(aws_lb.main[*].arn, count.index)
   port              = var.https_port
   protocol          = var.listener_protocol
   ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
   certificate_arn   = var.listener_certificate_arn
   default_action {
-    target_group_arn = join("", aws_lb_target_group.main.*.arn)
+    target_group_arn = join("", aws_lb_target_group.main[*].arn)
     type             = var.listener_type
 
     dynamic "fixed_response" {
@@ -86,11 +86,11 @@ resource "aws_lb_listener" "https" {
 resource "aws_lb_listener" "http" {
   count = var.enable == true && var.with_target_group && var.http_enabled == true && var.load_balancer_type == "application" ? 1 : 0
 
-  load_balancer_arn = element(aws_lb.main.*.arn, count.index)
+  load_balancer_arn = element(aws_lb.main[*].arn, count.index)
   port              = var.http_port
   protocol          = "HTTP"
   default_action {
-    target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
+    target_group_arn = element(aws_lb_target_group.main[*].arn, count.index)
     type             = var.http_listener_type
     redirect {
       port        = var.https_port
@@ -107,7 +107,7 @@ resource "aws_lb_listener" "http" {
 resource "aws_lb_listener" "nhttps" {
   count = var.enable == true && var.with_target_group && var.https_enabled == true && var.load_balancer_type == "network" ? length(var.https_listeners) : 0
 
-  load_balancer_arn = element(aws_lb.main.*.arn, count.index)
+  load_balancer_arn = element(aws_lb.main[*].arn, count.index)
   port              = var.https_listeners[count.index]["port"]
   protocol          = lookup(var.https_listeners[count.index], "protocol", "HTTPS")
   certificate_arn   = var.https_listeners[count.index]["certificate_arn"]
@@ -125,7 +125,7 @@ resource "aws_lb_listener" "nhttps" {
 resource "aws_lb_listener" "nhttp" {
   count = var.enable == true && var.with_target_group && var.load_balancer_type == "network" ? length(var.http_tcp_listeners) : 0
 
-  load_balancer_arn = element(aws_lb.main.*.arn, 0)
+  load_balancer_arn = element(aws_lb.main[*].arn, 0)
   port              = var.http_tcp_listeners[count.index]["port"]
   protocol          = var.http_tcp_listeners[count.index]["protocol"]
   default_action {
@@ -182,7 +182,7 @@ resource "aws_lb_target_group" "main" {
 resource "aws_lb_target_group_attachment" "attachment" {
   count = var.enable && var.with_target_group && var.load_balancer_type == "application" && var.target_type == "" ? var.instance_count : 0
 
-  target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
+  target_group_arn = element(aws_lb_target_group.main[*].arn, count.index)
   target_id        = element(var.target_id, count.index)
   port             = var.target_group_port
 }
@@ -190,7 +190,7 @@ resource "aws_lb_target_group_attachment" "attachment" {
 resource "aws_lb_target_group_attachment" "nattachment" {
   count = var.enable && var.with_target_group && var.load_balancer_type == "network" ? length(var.https_listeners) : 0
 
-  target_group_arn = element(aws_lb_target_group.main.*.arn, count.index)
+  target_group_arn = element(aws_lb_target_group.main[*].arn, count.index)
   target_id        = element(var.target_id, 0)
   port             = lookup(var.target_groups[count.index], "backend_port", null)
 }
