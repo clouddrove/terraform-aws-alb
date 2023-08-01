@@ -194,15 +194,10 @@ Here are examples of how you can use this module in your inventory structure:
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | access\_logs | Access logs Enable or Disable. | `bool` | `false` | no |
-| allocation\_id | The allocation ID of the Elastic IP address. | `string` | `""` | no |
-| attributes | Additional attributes (e.g. `1`). | `list(any)` | `[]` | no |
-| availability\_zones | The AZ's to serve traffic in. | `list(map(string))` | `[]` | no |
 | clb\_enable | If true, create clb. | `bool` | `false` | no |
 | connection\_draining | TBoolean to enable connection draining. Default: false. | `bool` | `false` | no |
 | connection\_draining\_timeout | The time after which connection draining is aborted in seconds. | `number` | `300` | no |
-| delimiter | Delimiter to be used between `organization`, `environment`, `name` and `attributes`. | `string` | `"-"` | no |
 | enable | If true, create alb. | `bool` | `false` | no |
-| enable\_connection\_draining | Whether or not to enable connection draining ("true" or "false"). | `bool` | `false` | no |
 | enable\_cross\_zone\_load\_balancing | Indicates whether cross zone load balancing should be enabled in application load balancers. | `bool` | `true` | no |
 | enable\_deletion\_protection | If true, deletion of the load balancer will be disabled via the AWS API. This will prevent Terraform from deleting the load balancer. Defaults to false. | `bool` | `false` | no |
 | enable\_http2 | Indicates whether HTTP/2 is enabled in application load balancers. | `bool` | `true` | no |
@@ -217,7 +212,6 @@ Here are examples of how you can use this module in your inventory structure:
 | http\_port | The port on which the load balancer is listening. like 80 or 443. | `number` | `80` | no |
 | http\_tcp\_listeners | A list of maps describing the HTTP listeners for this ALB. Required key/values: port, protocol. Optional key/values: target\_group\_index (defaults to 0) | `list(map(string))` | `[]` | no |
 | https\_enabled | A boolean flag to enable/disable HTTPS listener. | `bool` | `true` | no |
-| https\_listener\_rules | A list of maps describing the Listener Rules for this ALB. Required key/values: actions, conditions. Optional key/values: priority, https\_listener\_index (default to https\_listeners[count.index]) | `any` | `[]` | no |
 | https\_listeners | A list of maps describing the HTTPS listeners for this ALB. Required key/values: port, certificate\_arn. Optional key/values: ssl\_policy (defaults to ELBSecurityPolicy-2016-08), target\_group\_index (defaults to 0) | `list(map(string))` | `[]` | no |
 | https\_port | The port on which the load balancer is listening. like 80 or 443. | `number` | `443` | no |
 | idle\_timeout | The time in seconds that the connection is allowed to be idle. | `number` | `60` | no |
@@ -240,10 +234,8 @@ Here are examples of how you can use this module in your inventory structure:
 | repository | Terraform current module repo | `string` | `"https://github.com/clouddrove/terraform-aws-alb"` | no |
 | security\_groups | A list of security group IDs to assign to the LB. Only valid for Load Balancers of type application. | `list(any)` | `[]` | no |
 | status\_code | The HTTP redirect code. The redirect is either permanent (HTTP\_301) or temporary (HTTP\_302). | `string` | `"HTTP_301"` | no |
-| subnet\_id | The id of the subnet of which to attach to the load balancer. You can specify only one subnet per Availability Zone. | `string` | `""` | no |
 | subnet\_mapping | A list of subnet mapping blocks describing subnets to attach to network load balancer | `list(map(string))` | `[]` | no |
 | subnets | A list of subnet IDs to attach to the LB. Subnets cannot be updated for Load Balancers of type network. Changing this value will for load balancers of type network will force a recreation of the resource. | `list(any)` | `[]` | no |
-| tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | `map(any)` | `{}` | no |
 | target\_group\_port | The port on which targets receive traffic, unless overridden when registering a specific target. | `string` | `80` | no |
 | target\_groups | A list of maps containing key/value pairs that define the target groups to be created. Order of these maps is important and the index of these are to be referenced in listener definitions. Required key/values: name, backend\_protocol, backend\_port. Optional key/values are in the target\_groups\_defaults variable. | `any` | `[]` | no |
 | target\_id | The ID of the target. This is the Instance ID for an instance, or the container ID for an ECS container. If the target type is ip, specify an IP address. | `list(any)` | n/a | yes |
