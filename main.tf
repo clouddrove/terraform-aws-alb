@@ -86,9 +86,9 @@ resource "aws_lb" "main" {
   enable_waf_fail_open                        = var.enable_waf_fail_open
   desync_mitigation_mode                      = var.desync_mitigation_mode
   xff_header_processing_mode                  = var.xff_header_processing_mode
-  ip_address_type            = var.ip_address_type
-  tags                       = module.labels.tags
-  drop_invalid_header_fields = true
+  ip_address_type                             = var.ip_address_type
+  tags                                        = module.labels.tags
+  drop_invalid_header_fields                  = true
 
   timeouts {
     create = var.load_balancer_create_timeout
@@ -278,7 +278,7 @@ resource "aws_lb_target_group" "main" {
 ## For attaching resources with Elastic Load Balancer (ELB), see the aws_elb_attachment resource.
 ##-----------------------------------------------------------------------------
 resource "aws_lb_target_group_attachment" "attachment" {
-#  count = var.enable && var.with_target_group && var.load_balancer_type == "application" && var.target_type == "" ? var.instance_count : 0
+  #  count = var.enable && var.with_target_group && var.load_balancer_type == "application" && var.target_type == "" ? var.instance_count : 0
   count = var.enable && var.with_target_group && var.load_balancer_type == "application" ? length(var.https_listeners) : 0
 
   target_group_arn = element(aws_lb_target_group.main[*].arn, count.index)

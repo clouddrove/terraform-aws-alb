@@ -44,15 +44,16 @@ usage : |-
     module "alb" {
       source                     = "clouddrove/alb/aws"
       version                    = "1.4.0"
-      name                       = "alb"
+      name                       = local.name
       enable                     = true
       internal                   = true
       load_balancer_type         = "application"
       instance_count             = module.ec2.instance_count
-      security_groups            = [module.ssh.security_group_ids, module.http_https.security_group_ids]
       subnets                    = module.public_subnets.public_subnet_id
       target_id                  = module.ec2.instance_id
       vpc_id                     = module.vpc.vpc_id
+      allowed_ip                 = [module.vpc.vpc_cidr_block]
+      allowed_ports              = [3306]
       listener_certificate_arn   = module.acm.arn
       enable_deletion_protection = false
       with_target_group          = true
@@ -61,6 +62,34 @@ usage : |-
       https_port                 = 443
       listener_type              = "forward"
       target_group_port          = 80
+
+      http_tcp_listeners = [
+        {
+          port               = 80
+          protocol           = "TCP"
+          target_group_index = 0
+        },
+        {
+          port               = 81
+          protocol           = "TCP"
+          target_group_index = 0
+        },
+      ]
+      https_listeners = [
+        {
+          port               = 443
+          protocol           = "TLS"
+          target_group_index = 0
+          certificate_arn    = module.acm.arn
+        },
+        {
+          port               = 84
+          protocol           = "TLS"
+          target_group_index = 0
+          certificate_arn    = module.acm.arn
+        },
+      ]
+
       target_groups = [
         {
           backend_protocol     = "HTTP"
@@ -80,7 +109,14 @@ usage : |-
           }
         }
       ]
-    }
+
+      extra_ssl_certs = [
+        {
+          https_listener_index = 0
+          certificate_arn      = module.acm.arn
+        }
+      ]
+      }
   ```
 
   ### NLB Example
@@ -88,9 +124,9 @@ usage : |-
     module "nlb" {
       source                     = "clouddrove/alb/aws"
       version                    = "1.4.0"
-      name                       = "nlb"
+      name                       = local.name
       enable                     = true
-      internal                   = true
+      internal                   = false
       load_balancer_type         = "network"
       instance_count             = module.ec2.instance_count
       subnets                    = module.public_subnets.public_subnet_id
@@ -104,6 +140,11 @@ usage : |-
           protocol           = "TCP"
           target_group_index = 0
         },
+        {
+          port               = 81
+          protocol           = "TCP"
+          target_group_index = 0
+        },
       ]
       target_groups = [
         {
@@ -112,9 +153,24 @@ usage : |-
           target_type      = "instance"
         },
         {
-          backend_protocol = "TLS"
-          backend_port     = 443
+          backend_protocol = "TCP"
+          backend_port     = 81
           target_type      = "instance"
+        },
+      ]
+
+      https_listeners = [
+        {
+          port               = 443
+          protocol           = "TLS"
+          target_group_index = 0
+          certificate_arn    = module.acm.arn
+        },
+        {
+          port               = 84
+          protocol           = "TLS"
+          target_group_index = 0
+          certificate_arn    = module.acm.arn
         },
       ]
     }
@@ -125,28 +181,29 @@ usage : |-
     module "clb" {
     source                     = "clouddrove/alb/aws"
     version                    = "1.4.0"
-    name                       = "clb"
-    load_balancer_type         = "classic"
-    clb_enable                 = true
-    internal                   = true
-    target_id                  = module.ec2.instance_id
-    security_groups            = [module.ssh.security_group_ids, module.http_https.security_group_ids]
-    subnets                    = module.public_subnets.public_subnet_id
-    with_target_group          = true
+
+    name               = local.name
+    load_balancer_type = "classic"
+    clb_enable         = true
+    internal           = true
+    vpc_id             = module.vpc.vpc_id
+    target_id          = module.ec2.instance_id
+    subnets            = module.public_subnets.public_subnet_id
+    with_target_group  = true
     listeners = [
       {
-        lb_port               = 22000
-        lb_protocol           = "TCP"
-        instance_port         = 22000
-        instance_protocol     = "TCP"
-        ssl_certificate_id    = null
+        lb_port            = 22000
+        lb_protocol        = "TCP"
+        instance_port      = 22000
+        instance_protocol  = "TCP"
+        ssl_certificate_id = null
       },
       {
-        lb_port              = 4444
-        lb_protocol          = "TCP"
-        instance_port        = 4444
-        instance_protocol    = "TCP"
-        ssl_certificate_id   = null
+        lb_port            = 4444
+        lb_protocol        = "TCP"
+        instance_port      = 4444
+        instance_protocol  = "TCP"
+        ssl_certificate_id = null
       }
     ]
     health_check_target              = "TCP:4444"
@@ -154,5 +211,5 @@ usage : |-
     health_check_interval            = 30
     health_check_unhealthy_threshold = 5
     health_check_healthy_threshold   = 5
-   }
+    }
   ```
