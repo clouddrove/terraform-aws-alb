@@ -61,3 +61,13 @@ output "tags" {
   value       = module.labels.tags
   description = "A mapping of tags to assign to the resource."
 }
+
+output "security_group_arn" {
+  description = "Amazon Resource Name (ARN) of the security group"
+  value       = try(aws_security_group.default[0].arn, null)
+}
+
+output "security_group_id" {
+  description = "ID of the security group"
+  value       = try(aws_security_group.default[0].id, null)
+}
