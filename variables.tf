@@ -56,7 +56,6 @@ variable "load_balancer_type" {
   type        = string
   default     = ""
   description = "The type of load balancer to create. Possible values are application or network. The default value is application."
-  sensitive   = true
 }
 
 
@@ -81,7 +80,6 @@ variable "http_tcp_listeners" {
 variable "target_groups" {
   description = "A list of maps containing key/value pairs that define the target groups to be created. Order of these maps is important and the index of these are to be referenced in listener definitions. Required key/values: name, backend_protocol, backend_port. Optional key/values are in the target_groups_defaults variable."
   type        = any
-  sensitive   = true
   default     = []
 }
 
@@ -89,7 +87,6 @@ variable "subnets" {
   type        = list(any)
   default     = []
   description = "A list of subnet IDs to attach to the LB. Subnets cannot be updated for Load Balancers of type network. Changing this value will for load balancers of type network will force a recreation of the resource."
-  sensitive   = true
 }
 
 variable "enable_deletion_protection" {
@@ -102,21 +99,18 @@ variable "https_port" {
   type        = number
   default     = 443
   description = "The port on which the load balancer is listening. like 80 or 443."
-  sensitive   = true
 }
 
 variable "listener_protocol" {
   type        = string
   default     = "HTTPS"
   description = "The protocol for connections from clients to the load balancer. Valid values are TCP, HTTP and HTTPS. Defaults to HTTP."
-  sensitive   = true
 }
 
 variable "http_port" {
   type        = number
   default     = 80
   description = "The port on which the load balancer is listening. like 80 or 443."
-  sensitive   = true
 }
 
 variable "https_enabled" {
@@ -153,14 +147,12 @@ variable "target_group_port" {
 
 variable "vpc_id" {
   type        = string
-  sensitive   = true
   default     = ""
   description = "The identifier of the VPC in which to create the target group."
 }
 
 variable "target_id" {
   type        = list(any)
-  sensitive   = true
   description = "The ID of the target. This is the Instance ID for an instance, or the container ID for an ECS container. If the target type is ip, specify an IP address."
 }
 
@@ -184,7 +176,6 @@ variable "enable_http2" {
 
 variable "ip_address_type" {
   type        = string
-  sensitive   = true
   default     = "ipv4"
   description = "The type of IP addresses used by the subnets for your load balancer. The possible values are ipv4 and dualstack."
 }

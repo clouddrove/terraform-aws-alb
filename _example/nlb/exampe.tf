@@ -88,7 +88,7 @@ module "ec2" {
   ssh_allowed_ip              = ["0.0.0.0/0"]
   ssh_allowed_ports           = [22]
   tenancy                     = "default"
-  public_key                  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCmPuPTJ58AMvweGBuAqKX+tkb0ylYq5k6gPQnl6+ivQ8i/jsUJ+juI7q/7vSoTpd0k9Gv7DkjGWg1527I+LJeropVSaRqwDcrnuM1IfUCu0QdRoU8e0sW7kQGnwObJhnRcxiGPa1inwnneq9zdXK8BGgV2E4POKdwbEBlmjZmW8j4JMnCsLvZ4hxBjZB/3fnvHhn7UCqd2C6FhOz9k+aK2kxXHxdDdO9BzKqtvm5dSAxHhw6nDHSU+cHupjiiY/SvmFH0QpR5Fn1kyZH7DxV4D8R9wvP9jKZe/RRTEkB2HY7FpVNz/EqO/z5bv7japQ5LZY1"
+  public_key                  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCm63Yf1+E6Fkts7LcAdOalvdUrZE0oA1A6pJUkx9c/V8ZFuclg7uNdnXV98iHWlA6tcvV69HsdBJZU3w66+6rxGgM0dbwSalRz60IGM40HwRT"
   subnet_ids                  = tolist(module.public_subnets.public_subnet_id)
   iam_instance_profile        = module.iam-role.name
   assign_eip_address          = true
@@ -159,13 +159,13 @@ module "nlb" {
     {
       port               = 443
       protocol           = "TLS"
-      target_group_index = 0
+      target_group_index = 1
       certificate_arn    = module.acm.arn
     },
     {
       port               = 84
       protocol           = "TLS"
-      target_group_index = 0
+      target_group_index = 1
       certificate_arn    = module.acm.arn
     },
   ]
