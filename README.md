@@ -53,6 +53,8 @@ We have [*fifty plus terraform modules*][terraform_modules]. A few of them are c
 ## Prerequisites
 
 This module has a few dependencies: 
+- [Terraform 1.5.3](https://learn.hashicorp.com/terraform/getting-started/install.html)
+
 
 
 
@@ -71,15 +73,16 @@ Here are examples of how you can use this module in your inventory structure:
   module "alb" {
     source                     = "clouddrove/alb/aws"
     version                    = "1.4.0"
-    name                       = "alb"
+    name                       = local.name
     enable                     = true
     internal                   = true
     load_balancer_type         = "application"
     instance_count             = module.ec2.instance_count
-    security_groups            = [module.ssh.security_group_ids, module.http_https.security_group_ids]
     subnets                    = module.public_subnets.public_subnet_id
     target_id                  = module.ec2.instance_id
     vpc_id                     = module.vpc.vpc_id
+    allowed_ip                 = [module.vpc.vpc_cidr_block]
+    allowed_ports              = [3306]
     listener_certificate_arn   = module.acm.arn
     enable_deletion_protection = false
     with_target_group          = true
@@ -88,6 +91,34 @@ Here are examples of how you can use this module in your inventory structure:
     https_port                 = 443
     listener_type              = "forward"
     target_group_port          = 80
+
+    http_tcp_listeners = [
+      {
+        port               = 80
+        protocol           = "TCP"
+        target_group_index = 0
+      },
+      {
+        port               = 81
+        protocol           = "TCP"
+        target_group_index = 0
+      },
+    ]
+    https_listeners = [
+      {
+        port               = 443
+        protocol           = "TLS"
+        target_group_index = 0
+        certificate_arn    = module.acm.arn
+      },
+      {
+        port               = 84
+        protocol           = "TLS"
+        target_group_index = 0
+        certificate_arn    = module.acm.arn
+      },
+    ]
+
     target_groups = [
       {
         backend_protocol     = "HTTP"
@@ -107,7 +138,14 @@ Here are examples of how you can use this module in your inventory structure:
         }
       }
     ]
-  }
+
+    extra_ssl_certs = [
+      {
+        https_listener_index = 0
+        certificate_arn      = module.acm.arn
+      }
+    ]
+    }
 ```
 
 ### NLB Example
@@ -115,9 +153,9 @@ Here are examples of how you can use this module in your inventory structure:
   module "nlb" {
     source                     = "clouddrove/alb/aws"
     version                    = "1.4.0"
-    name                       = "nlb"
+    name                       = local.name
     enable                     = true
-    internal                   = true
+    internal                   = false
     load_balancer_type         = "network"
     instance_count             = module.ec2.instance_count
     subnets                    = module.public_subnets.public_subnet_id
@@ -131,6 +169,11 @@ Here are examples of how you can use this module in your inventory structure:
         protocol           = "TCP"
         target_group_index = 0
       },
+      {
+        port               = 81
+        protocol           = "TCP"
+        target_group_index = 0
+      },
     ]
     target_groups = [
       {
@@ -139,9 +182,24 @@ Here are examples of how you can use this module in your inventory structure:
         target_type      = "instance"
       },
       {
-        backend_protocol = "TLS"
-        backend_port     = 443
+        backend_protocol = "TCP"
+        backend_port     = 81
         target_type      = "instance"
+      },
+    ]
+
+    https_listeners = [
+      {
+        port               = 443
+        protocol           = "TLS"
+        target_group_index = 0
+        certificate_arn    = module.acm.arn
+      },
+      {
+        port               = 84
+        protocol           = "TLS"
+        target_group_index = 0
+        certificate_arn    = module.acm.arn
       },
     ]
   }
@@ -152,28 +210,29 @@ Here are examples of how you can use this module in your inventory structure:
   module "clb" {
   source                     = "clouddrove/alb/aws"
   version                    = "1.4.0"
-  name                       = "clb"
-  load_balancer_type         = "classic"
-  clb_enable                 = true
-  internal                   = true
-  target_id                  = module.ec2.instance_id
-  security_groups            = [module.ssh.security_group_ids, module.http_https.security_group_ids]
-  subnets                    = module.public_subnets.public_subnet_id
-  with_target_group          = true
+
+  name               = local.name
+  load_balancer_type = "classic"
+  clb_enable         = true
+  internal           = true
+  vpc_id             = module.vpc.vpc_id
+  target_id          = module.ec2.instance_id
+  subnets            = module.public_subnets.public_subnet_id
+  with_target_group  = true
   listeners = [
     {
-      lb_port               = 22000
-      lb_protocol           = "TCP"
-      instance_port         = 22000
-      instance_protocol     = "TCP"
-      ssl_certificate_id    = null
+      lb_port            = 22000
+      lb_protocol        = "TCP"
+      instance_port      = 22000
+      instance_protocol  = "TCP"
+      ssl_certificate_id = null
     },
     {
-      lb_port              = 4444
-      lb_protocol          = "TCP"
-      instance_port        = 4444
-      instance_protocol    = "TCP"
-      ssl_certificate_id   = null
+      lb_port            = 4444
+      lb_protocol        = "TCP"
+      instance_port      = 4444
+      instance_protocol  = "TCP"
+      ssl_certificate_id = null
     }
   ]
   health_check_target              = "TCP:4444"
@@ -181,7 +240,7 @@ Here are examples of how you can use this module in your inventory structure:
   health_check_interval            = 30
   health_check_unhealthy_threshold = 5
   health_check_healthy_threshold   = 5
- }
+  }
 ```
 
 
@@ -193,15 +252,27 @@ Here are examples of how you can use this module in your inventory structure:
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| access\_logs | Access logs Enable or Disable. | `bool` | `false` | no |
+| access\_logs | Map containing access logging configuration for load balancer. | `map(string)` | `{}` | no |
+| allowed\_ip | List of allowed ip. | `list(any)` | `[]` | no |
+| allowed\_ports | List of allowed ingress ports | `list(any)` | `[]` | no |
+| cidr\_blocks | equal to 0. The supported values are defined in the IpProtocol argument on the IpPermission API reference | `list(string)` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
 | clb\_enable | If true, create clb. | `bool` | `false` | no |
 | connection\_draining | TBoolean to enable connection draining. Default: false. | `bool` | `false` | no |
 | connection\_draining\_timeout | The time after which connection draining is aborted in seconds. | `number` | `300` | no |
+| desync\_mitigation\_mode | Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. | `string` | `"defensive"` | no |
+| egress\_protocol | equal to 0. The supported values are defined in the IpProtocol argument on the IpPermission API reference | `number` | `-1` | no |
+| egress\_rule | Enable to create egress rule | `bool` | `true` | no |
 | enable | If true, create alb. | `bool` | `false` | no |
 | enable\_cross\_zone\_load\_balancing | Indicates whether cross zone load balancing should be enabled in application load balancers. | `bool` | `true` | no |
 | enable\_deletion\_protection | If true, deletion of the load balancer will be disabled via the AWS API. This will prevent Terraform from deleting the load balancer. Defaults to false. | `bool` | `false` | no |
 | enable\_http2 | Indicates whether HTTP/2 is enabled in application load balancers. | `bool` | `true` | no |
+| enable\_security\_group | Enable default Security Group with only Egress traffic allowed. | `bool` | `true` | no |
+| enable\_tls\_version\_and\_cipher\_suite\_headers | Indicates whether the two headers (x-amzn-tls-version and x-amzn-tls-cipher-suite), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. | `bool` | `false` | no |
+| enable\_waf\_fail\_open | Indicates whether to route requests to targets if lb fails to forward the request to AWS WAF | `bool` | `false` | no |
+| enable\_xff\_client\_port | Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in application load balancers. | `bool` | `true` | no |
 | environment | Environment (e.g. `prod`, `dev`, `staging`). | `string` | `"test"` | no |
+| extra\_ssl\_certs | A list of maps describing any extra SSL certificates to apply to the HTTPS listeners. Required key/values: certificate\_arn, https\_listener\_index (the index of the listener within https\_listeners which the cert applies toward). | `list(map(string))` | `[]` | no |
+| from\_port | (Required) Start port (or ICMP type number if protocol is icmp or icmpv6). | `number` | `0` | no |
 | health\_check\_healthy\_threshold | The number of successful health checks before an instance is put into service. | `number` | `10` | no |
 | health\_check\_interval | The time between health check attempts in seconds. | `number` | `30` | no |
 | health\_check\_target | The target to use for health checks. | `string` | `"TCP:80"` | no |
@@ -210,14 +281,18 @@ Here are examples of how you can use this module in your inventory structure:
 | http\_enabled | A boolean flag to enable/disable HTTP listener. | `bool` | `true` | no |
 | http\_listener\_type | The type of routing action. Valid values are forward, redirect, fixed-response, authenticate-cognito and authenticate-oidc. | `string` | `"redirect"` | no |
 | http\_port | The port on which the load balancer is listening. like 80 or 443. | `number` | `80` | no |
-| http\_tcp\_listeners | A list of maps describing the HTTP listeners for this ALB. Required key/values: port, protocol. Optional key/values: target\_group\_index (defaults to 0) | `list(map(string))` | `[]` | no |
+| http\_tcp\_listener\_rules | A list of maps describing the Listener Rules for this ALB. Required key/values: actions, conditions. Optional key/values: priority, http\_tcp\_listener\_index (default to http\_tcp\_listeners[count.index]) | `any` | `[]` | no |
+| http\_tcp\_listeners | A list of maps describing the HTTP listeners or TCP ports for this ALB. Required key/values: port, protocol. Optional key/values: target\_group\_index (defaults to http\_tcp\_listeners[count.index]) | `any` | `[]` | no |
 | https\_enabled | A boolean flag to enable/disable HTTPS listener. | `bool` | `true` | no |
+| https\_listener\_rules | A list of maps describing the Listener Rules for this ALB. Required key/values: actions, conditions. Optional key/values: priority, https\_listener\_index (default to https\_listeners[count.index]) | `any` | `[]` | no |
 | https\_listeners | A list of maps describing the HTTPS listeners for this ALB. Required key/values: port, certificate\_arn. Optional key/values: ssl\_policy (defaults to ELBSecurityPolicy-2016-08), target\_group\_index (defaults to 0) | `list(map(string))` | `[]` | no |
 | https\_port | The port on which the load balancer is listening. like 80 or 443. | `number` | `443` | no |
 | idle\_timeout | The time in seconds that the connection is allowed to be idle. | `number` | `60` | no |
 | instance\_count | The count of instances. | `number` | `0` | no |
 | internal | If true, the LB will be internal. | `string` | `""` | no |
 | ip\_address\_type | The type of IP addresses used by the subnets for your load balancer. The possible values are ipv4 and dualstack. | `string` | `"ipv4"` | no |
+| ipv6\_cidr\_blocks | Enable to create egress rule | `list(string)` | <pre>[<br>  "::/0"<br>]</pre> | no |
+| is\_external | enable to udated existing security Group | `bool` | `false` | no |
 | label\_order | Label order, e.g. `name`,`application`. | `list(any)` | <pre>[<br>  "name",<br>  "environment"<br>]</pre> | no |
 | listener\_certificate\_arn | The ARN of the SSL server certificate. Exactly one certificate is required if the protocol is HTTPS. | `string` | `""` | no |
 | listener\_https\_fixed\_response | Have the HTTPS listener return a fixed response for the default action. | <pre>object({<br>    content_type = string<br>    message_body = string<br>    status_code  = string<br>  })</pre> | `null` | no |
@@ -228,20 +303,27 @@ Here are examples of how you can use this module in your inventory structure:
 | load\_balancer\_delete\_timeout | Timeout value when deleting the ALB. | `string` | `"10m"` | no |
 | load\_balancer\_type | The type of load balancer to create. Possible values are application or network. The default value is application. | `string` | `""` | no |
 | load\_balancer\_update\_timeout | Timeout value when updating the ALB. | `string` | `"10m"` | no |
-| log\_bucket\_name | S3 bucket (externally created) for storing load balancer access logs. Required if logging\_enabled is true. | `string` | `""` | no |
 | managedby | ManagedBy, eg 'CloudDrove'. | `string` | `"hello@clouddrove.com"` | no |
 | name | Name  (e.g. `app` or `cluster`). | `string` | `""` | no |
+| preserve\_host\_header | Indicates whether Host header should be preserve and forward to targets without any change. Defaults to false. | `bool` | `false` | no |
+| protocol | The protocol. If not icmp, tcp, udp, or all use the. | `string` | `"tcp"` | no |
 | repository | Terraform current module repo | `string` | `"https://github.com/clouddrove/terraform-aws-alb"` | no |
-| security\_groups | A list of security group IDs to assign to the LB. Only valid for Load Balancers of type application. | `list(any)` | `[]` | no |
+| sg\_description | The security group description. | `string` | `"Instance default security group (only egress access is allowed)."` | no |
+| sg\_egress\_description | Description of the egress and ingress rule | `string` | `"Description of the rule."` | no |
+| sg\_egress\_ipv6\_description | Description of the egress\_ipv6 rule | `string` | `"Description of the rule."` | no |
+| sg\_ids | of the security group id. | `list(any)` | `[]` | no |
+| sg\_ingress\_description | Description of the ingress rule | `string` | `"Description of the ingress rule use elasticache."` | no |
+| ssl\_policy | Name of the SSL Policy for the listener. Required if protocol is HTTPS or TLS. | `string` | `"ELBSecurityPolicy-TLS-1-2-2017-01"` | no |
 | status\_code | The HTTP redirect code. The redirect is either permanent (HTTP\_301) or temporary (HTTP\_302). | `string` | `"HTTP_301"` | no |
 | subnet\_mapping | A list of subnet mapping blocks describing subnets to attach to network load balancer | `list(map(string))` | `[]` | no |
 | subnets | A list of subnet IDs to attach to the LB. Subnets cannot be updated for Load Balancers of type network. Changing this value will for load balancers of type network will force a recreation of the resource. | `list(any)` | `[]` | no |
 | target\_group\_port | The port on which targets receive traffic, unless overridden when registering a specific target. | `string` | `80` | no |
 | target\_groups | A list of maps containing key/value pairs that define the target groups to be created. Order of these maps is important and the index of these are to be referenced in listener definitions. Required key/values: name, backend\_protocol, backend\_port. Optional key/values are in the target\_groups\_defaults variable. | `any` | `[]` | no |
 | target\_id | The ID of the target. This is the Instance ID for an instance, or the container ID for an ECS container. If the target type is ip, specify an IP address. | `list(any)` | n/a | yes |
-| target\_type | The type of target that you must specify when registering targets with this target group. | `string` | `""` | no |
+| to\_port | equal to 0. The supported values are defined in the IpProtocol argument on the IpPermission API reference | `number` | `65535` | no |
 | vpc\_id | The identifier of the VPC in which to create the target group. | `string` | `""` | no |
 | with\_target\_group | Create LoadBlancer without target group | `bool` | `true` | no |
+| xff\_header\_processing\_mode | Determines how the load balancer modifies the X-Forwarded-For header in the HTTP request before sending the request to the target. | `string` | `"append"` | no |
 
 ## Outputs
 
@@ -258,6 +340,8 @@ Here are examples of how you can use this module in your inventory structure:
 | listener\_arns | A list of all the listener ARNs. |
 | main\_target\_group\_arn | The main target group ARN. |
 | name | The ARN suffix of the ALB. |
+| security\_group\_arn | Amazon Resource Name (ARN) of the security group |
+| security\_group\_id | ID of the security group |
 | tags | A mapping of tags to assign to the resource. |
 | zone\_id | The ID of the zone which ALB is provisioned. |
 
