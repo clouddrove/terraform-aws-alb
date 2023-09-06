@@ -76,19 +76,20 @@ data "aws_iam_policy_document" "iam-policy" {
 ## Amazon EC2 provides cloud hosted virtual machines, called "instances", to run applications.
 ##-----------------------------------------------------
 module "ec2" {
-  source = "git::https://github.com/clouddrove/terraform-aws-ec2.git?ref=master"
+  source  = "clouddrove/ec2/aws"
+  version = "2.0.0"
 
   name                        = local.name
   environment                 = local.environment
   instance_count              = 1
-  ami                         = "ami-08d658f84a6d84a80"
+  ami                         = "ami-01dd271720c1ba44f"
   instance_type               = "t2.nano"
   monitoring                  = false
   vpc_id                      = module.vpc.vpc_id
   ssh_allowed_ip              = ["0.0.0.0/0"]
   ssh_allowed_ports           = [22]
   tenancy                     = "default"
-  public_key                  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCm63Yf1+E6Fkts7LcAdOalvdUrZE0oA1A6pJUkx9c/V8ZFuclg7uNdnXV98iHWlA6tcvV69HsdBJZU3w66+6rxGgM0dbwSalRz60IGM40HwRT"
+  public_key                  = "l6+ivQ8i/jsUJ+juI7q/7vSoTpd0k9Gv7DkjGWg1527I+LJeropVSaRqwDcrnuM1IfUCu0QdRoU8e0sW7kQGnwObJhnRcxiGPa1inwnneq9zdXK8BGgV2E4POKdwbEBlmjZmW8j4JMnCsLvZ4hxBjZB/3fnvHhn7UCqd2C6FhOz9k+aK2kxXHxdDdO9BzKqtvm5dSAxHhw6nDHSU+cHupjiiY/SvmFH0QpR5Fn1kyZH7DxV4D8R9wvP9jKZe/RRTEkB2HY7FpVNz/EqO/z5bv7japQ5LZY1fFOK47S5KVo20y12XwkBcHeL5Bc8MuKt552JSRH7KKxvr2KD9QN5lCc0sOnQnlOK0INGHeIY4WnUSBvlVd4aOAJa4xE2PP0/k"
   subnet_ids                  = tolist(module.public_subnets.public_subnet_id)
   iam_instance_profile        = module.iam-role.name
   assign_eip_address          = true
@@ -112,7 +113,6 @@ module "acm" {
   validation_method         = "DNS"
   enable_dns_validation     = false
 }
-
 
 ##-----------------------------------------------------------------------------
 ## nlb module call.

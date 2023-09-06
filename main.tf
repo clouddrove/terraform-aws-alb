@@ -278,7 +278,6 @@ resource "aws_lb_target_group" "main" {
 ## For attaching resources with Elastic Load Balancer (ELB), see the aws_elb_attachment resource.
 ##-----------------------------------------------------------------------------
 resource "aws_lb_target_group_attachment" "attachment" {
-  #  count = var.enable && var.with_target_group && var.load_balancer_type == "application" && var.target_type == "" ? var.instance_count : 0
   count = var.enable && var.with_target_group && var.load_balancer_type == "application" ? length(var.https_listeners) : 0
 
   target_group_arn = element(aws_lb_target_group.main[*].arn, count.index)
