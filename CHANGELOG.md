@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2023-09-11
+### :sparkles: New Features
+- [`fe85eaa`](https://github.com/clouddrove/terraform-aws-alb/commit/fe85eaa4683fd49557af8f9d7fa4dc504fa809f3) - updated changelog.yml name and file *(commit by [@vibhutigoyal](https://github.com/vibhutigoyal))*
+- [`976e2bd`](https://github.com/clouddrove/terraform-aws-alb/commit/976e2bd9ad81f7def90f42c9a193c833058fd6c7) - added acm module *(commit by [@theprashantyadav](https://github.com/theprashantyadav))*
+- [`d29f980`](https://github.com/clouddrove/terraform-aws-alb/commit/d29f9809c3f107c489f4be8dedcb7e4a2e591d95) - added acm module and new github-action *(commit by [@theprashantyadav](https://github.com/theprashantyadav))*
+- [`2cf0e18`](https://github.com/clouddrove/terraform-aws-alb/commit/2cf0e18fb6119be22d567b8e4fbcb2939b558211) - added acm module and new github-action *(commit by [@theprashantyadav](https://github.com/theprashantyadav))*
+- [`c41ce75`](https://github.com/clouddrove/terraform-aws-alb/commit/c41ce75e0584bbcaa8e3be8fd437096b13f9fe3a) - added acm module and new github-action *(commit by [@theprashantyadav](https://github.com/theprashantyadav))*
+- [`ee3d5b1`](https://github.com/clouddrove/terraform-aws-alb/commit/ee3d5b1eb60cf3f3f40f0fe00f094e76f9bdf146) - added new output target group *(commit by [@theprashantyadav](https://github.com/theprashantyadav))*
+- [`c6d1a30`](https://github.com/clouddrove/terraform-aws-alb/commit/c6d1a302a248263544318fbc75434e4c61cc09c1) - update subnet tag *(commit by [@theprashantyadav](https://github.com/theprashantyadav))*
+- [`9ecd7e5`](https://github.com/clouddrove/terraform-aws-alb/commit/9ecd7e5d73c420ba73bb87dac5f6ff9d19486f18) - update subnet and vpc tag *(commit by [@theprashantyadav](https://github.com/theprashantyadav))*
+
+### :bug: Bug Fixes
+- [`b7552fb`](https://github.com/clouddrove/terraform-aws-alb/commit/b7552fb6f33d0b00f22cc956046a706702c5fe85) - added versions.tf and updated vpc tag *(commit by [@mamrajyadav](https://github.com/mamrajyadav))*
+- [`db7e7bf`](https://github.com/clouddrove/terraform-aws-alb/commit/db7e7bf804b106b1de59a3c881665929a9b3011e) - update main.tf, version.tf and github action and add locals in example *(commit by [@mamrajyadav](https://github.com/mamrajyadav))*
+- [`bcbafab`](https://github.com/clouddrove/terraform-aws-alb/commit/bcbafab11266d380bd5e096a626d618a5e31e712) - run terraform fmt *(commit by [@mamrajyadav](https://github.com/mamrajyadav))*
+- [`1c46d99`](https://github.com/clouddrove/terraform-aws-alb/commit/1c46d99e67dfe33cb073e7c48f987b1844786960) - multi instance attachement to nlb target group *(commit by [@anmolnagpal](https://github.com/anmolnagpal))*
+- [`ef91c0c`](https://github.com/clouddrove/terraform-aws-alb/commit/ef91c0c60438d195f4ca24f50469ab881d30ddcd) - update source of ec2 module *(commit by [@mamrajyadav](https://github.com/mamrajyadav))*
+
+
 ## [1.3.0] - 2023-01-27
 ### :bug: Bug Fixes
 - [`76f4fce`](https://github.com/clouddrove/terraform-aws-alb/commit/76f4fce8b71d0f9fa71ab068507e610c10e529a1) - use terraform letast version
@@ -106,3 +125,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [1.0.1]: https://github.com/clouddrove/terraform-aws-alb/compare/1.0.1...master
 [1.0.2]: https://github.com/clouddrove/terraform-aws-alb/compare/1.0.2...master
 [1.3.0]: https://github.com/clouddrove/terraform-aws-alb/compare/1.3.0...master
+[2.0.0]: https://github.com/clouddrove/terraform-aws-alb/compare/1.3.0...2.0.0
