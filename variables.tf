@@ -18,7 +18,6 @@ variable "repository" {
   }
 }
 
-
 variable "environment" {
   type        = string
   default     = "test"
@@ -57,7 +56,6 @@ variable "load_balancer_type" {
   default     = ""
   description = "The type of load balancer to create. Possible values are application or network. The default value is application."
 }
-
 
 variable "subnet_mapping" {
   default     = []
@@ -131,7 +129,6 @@ variable "listener_type" {
   description = "The type of routing action. Valid values are forward, redirect, fixed-response, authenticate-cognito and authenticate-oidc."
 }
 
-
 variable "listener_certificate_arn" {
   type        = string
   sensitive   = true
@@ -197,7 +194,6 @@ variable "load_balancer_update_timeout" {
   default     = "10m"
   description = "Timeout value when updating the ALB."
 }
-
 
 variable "http_listener_type" {
   type        = string

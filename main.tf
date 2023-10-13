@@ -286,9 +286,7 @@ resource "aws_lb_target_group_attachment" "attachment" {
 }
 
 locals {
-  arns    = aws_lb_target_group.main.*.arn
   targets = range(var.instance_count)
-  ports   = [for d in var.target_groups : d.backend_port]
   # Nested loop over both lists, and flatten the result.
   arns_targets = distinct(flatten([
     for arn_key, arn in var.target_groups : [
@@ -304,8 +302,8 @@ locals {
 resource "aws_lb_target_group_attachment" "nattachment" {
   for_each = var.load_balancer_type == "network" && var.enable && var.with_target_group ? { for k, v in local.arns_targets : k => v } : {}
 
-  target_group_arn = element(aws_lb_target_group.main.*.arn, each.value.key) #local.arns_targets[count.index].arn
-  target_id        = var.target_id[each.value.target]                        #each.value.target
+  target_group_arn = element(aws_lb_target_group.main[*].arn, each.value.key) #local.arns_targets[count.index].arn
+  target_id        = var.target_id[each.value.target]                         #each.value.target
   port             = each.value.port
 }
 
