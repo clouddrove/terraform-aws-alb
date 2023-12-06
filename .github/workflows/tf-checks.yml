@@ -6,14 +6,14 @@ on:
   workflow_dispatch:
 jobs:
   alb:
-    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@1.0.6
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@1.0.8
     with:
       working_directory: './_example/alb/'
   nlb:
-    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@1.0.6
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@1.0.8
     with:
       working_directory: './_example/nlb/'
   clb:
-    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@1.0.6
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@1.0.8
     with:
       working_directory: './_example/clb/'
