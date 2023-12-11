@@ -790,3 +790,19 @@ resource "aws_lb_listener_certificate" "https_listener" {
   listener_arn    = aws_lb_listener.https[var.extra_ssl_certs[count.index]["https_listener_index"]].arn
   certificate_arn = var.extra_ssl_certs[count.index]["certificate_arn"]
 }
+
+##----------------------------------------------------------------------------------
+## A Route 53 record to map ELB DNS with specified domain/subdomain.
+##----------------------------------------------------------------------------------
+resource "aws_route53_record" "default" {
+  count = var.enable && var.dns_record_name != null ? 1 : 0
+
+  zone_id = var.hosted_zone_id
+  name    = var.dns_record_name
+  type    = var.dns_record_type
+  alias {
+    name                   = join("", aws_lb.main[*].dns_name)
+    zone_id                = join("", aws_lb.main[*].zone_id)
+    evaluate_target_health = var.evaluate_target_health
+  }
+}

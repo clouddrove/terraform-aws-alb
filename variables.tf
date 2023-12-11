@@ -450,3 +450,27 @@ variable "ipv6_cidr_blocks" {
   default     = ["::/0"]
   description = "Enable to create egress rule"
 }
+
+variable "hosted_zone_id" {
+  type        = string
+  default     = ""
+  description = "(Required) The ID of the hosted zone to contain this record."
+}
+
+variable "dns_record_name" {
+  type        = string
+  default     = null
+  description = "(Required) The name of the record. Example: `foo.bar.com` "
+}
+
+variable "dns_record_type" {
+  type        = string
+  default     = "A"
+  description = "(Required) The record type. Valid values are A, AAAA, CAA, CNAME, DS, MX, NAPTR, NS, PTR, SOA, SPF, SRV and TXT."
+}
+
+variable "evaluate_target_health" {
+  type        = bool
+  default     = false
+  description = "(Required) Set to true if you want Route 53 to determine whether to respond to DNS queries using this resource record set by checking the health of the resource record set. Some resources have special requirements, [see related part of documentation.](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-values.html#rrsets-values-alias-evaluate-target-health)"
+}

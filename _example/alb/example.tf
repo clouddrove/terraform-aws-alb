@@ -139,6 +139,8 @@ module "alb" {
   https_port                 = 443
   listener_type              = "forward"
   target_group_port          = 80
+  dns_record_name            = "example.clouddrove.ca"
+  hosted_zone_id             = "Z06XXXXXXXXXXXXXAL4"
 
   http_tcp_listeners = [
     {
