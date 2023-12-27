@@ -1,3 +1,4 @@
+---
 name: Auto Assign PRs
 on:
   pull_request:
@@ -10,3 +11,4 @@ jobs:
       GITHUB: ${{ secrets.GITHUB }}
     with:
       assignees: 'clouddrove-ci'
+...
