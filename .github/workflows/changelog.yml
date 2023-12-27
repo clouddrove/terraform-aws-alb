@@ -1,3 +1,4 @@
+---
 name: changelog
 permissions: write-all
 on:
@@ -11,3 +12,4 @@ jobs:
     secrets: inherit
     with:
       branch: 'master'
+...
