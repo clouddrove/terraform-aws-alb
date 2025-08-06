@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "eu-west-1"
+  region = "us-east-1"
 }
 
 locals {
@@ -11,8 +11,9 @@ locals {
 ## A VPC is a virtual network that closely resembles a traditional network that you'd operate in your own data center.
 ##--------------------------------------------------------------------------------------------------------------------------
 module "vpc" {
-  source      = "clouddrove/vpc/aws"
-  version     = "2.0.0"
+  source  = "clouddrove/vpc/aws"
+  version = "2.0.0"
+
   name        = local.name
   environment = local.environment
   cidr_block  = "172.16.0.0/16"
@@ -22,11 +23,12 @@ module "vpc" {
 ## A subnet is a range of IP addresses in your VPC.
 ##-----------------------------------------------------
 module "public_subnets" {
-  source             = "clouddrove/subnet/aws"
-  version            = "2.0.1"
+  source  = "clouddrove/subnet/aws"
+  version = "2.0.1"
+
   name               = local.name
   environment        = local.environment
-  availability_zones = ["eu-west-1b", "eu-west-1c"]
+  availability_zones = ["us-east-1b", "us-east-1c"]
   type               = "public"
   vpc_id             = module.vpc.vpc_id
   cidr_block         = module.vpc.vpc_cidr_block
@@ -43,9 +45,8 @@ module "iam-role" {
   name               = local.name
   environment        = local.environment
   assume_role_policy = data.aws_iam_policy_document.default.json
-
-  policy_enabled = true
-  policy         = data.aws_iam_policy_document.iam-policy.json
+  policy_enabled     = true
+  policy             = data.aws_iam_policy_document.iam-policy.json
 }
 
 data "aws_iam_policy_document" "default" {
@@ -75,30 +76,51 @@ data "aws_iam_policy_document" "iam-policy" {
 ##-----------------------------------------------------
 ## Amazon EC2 provides cloud hosted virtual machines, called "instances", to run applications.
 ##-----------------------------------------------------
+##----------------------------------------------------------------------------------
+## Terraform module to create instance module on AWS.
+##----------------------------------------------------------------------------------
 module "ec2" {
-  source  = "clouddrove/ec2/aws"
-  version = "2.0.3"
+  source      = "clouddrove/ec2/aws"
+  version     = "2.0.3"
+  name        = "local.name"
+  environment = "local.environment"
 
-  name                        = local.name
-  environment                 = local.environment
-  instance_count              = 1
-  ami                         = "ami-01dd271720c1ba44f"
-  instance_type               = "t2.nano"
-  monitoring                  = false
-  vpc_id                      = module.vpc.vpc_id
-  ssh_allowed_ip              = ["0.0.0.0/0"]
-  ssh_allowed_ports           = [22]
-  tenancy                     = "default"
-  public_key                  = "l6+ivQ8i/jsUJ+juI7q/7vSoTpd0k9Gv7DkjGWg1527I+LJeropVSaRqwDcrnuM1IfUCu0QdRoU8e0sW7kQGnwObJhnRcxiGPa1inwnneq9zdXK8BGgV2E4POKdwbEBlmjZmW8j4JMnCsLvZ4hxBjZB/3fnvHhn7UCqd2C6FhOz9k+aK2kxXHxdDdO9BzKqtvm5dSAxHhw6nDHSU+cHupjiiY/SvmFH0QpR5Fn1kyZH7DxV4D8R9wvP9jKZe/RRTEkB2HY7FpVNz/EqO/z5bv7japQ5LZY1fFOK47S5KVo20y12XwkBcHeL5Bc8MuKt552JSRH7KKxvr2KD9QN5lCc0sOnQnlOK0INGHeIY4WnUSBvlVd4aOAJa4xE2PP0/k"
-  subnet_ids                  = tolist(module.public_subnets.public_subnet_id)
-  iam_instance_profile        = module.iam-role.name
-  assign_eip_address          = true
-  associate_public_ip_address = true
-  instance_profile_enabled    = true
-  ebs_optimized               = false
-  ebs_volume_enabled          = true
-  ebs_volume_type             = "gp2"
-  ebs_volume_size             = 30
+  ##----------------------------------------------------------------------------------
+  ## Below A security group controls the traffic that is allowed to reach and leave the resources that it is associated with.
+  ##----------------------------------------------------------------------------------
+  #tfsec:aws-ec2-no-public-ingress-sgr
+  vpc_id            = module.vpc.vpc_id
+  ssh_allowed_ip    = ["0.0.0.0/0"]
+  ssh_allowed_ports = [22]
+
+  #instance
+  instance_count = 1
+  instance_configuration = {
+    ami           = "ami-084a7d336e816906b"
+    instance_type = "t2.nano"
+
+    #Root Volume
+    root_block_device = [
+      {
+        volume_type           = "gp2"
+        volume_size           = 30
+        delete_on_termination = true
+      }
+    ]
+  }
+
+  #Networking
+  subnet_ids = tolist(module.public_subnets.public_subnet_id)
+
+  #Keypair
+  public_key = "ssh-rsa xxxxxxxxxx"
+  #IAM
+  iam_instance_profile = module.iam-role.name
+
+
+  #Tags
+  instance_tags = { "snapshot" = true }
+
 }
 
 module "acm" {
