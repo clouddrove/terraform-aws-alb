@@ -77,7 +77,7 @@ data "aws_iam_policy_document" "iam-policy" {
 ##-----------------------------------------------------
 module "ec2" {
   source  = "clouddrove/ec2/aws"
-  version = "2.0.3"
+  version = "2.0.4"
 
   name                        = local.name
   environment                 = local.environment
