@@ -39,7 +39,7 @@ module "public_subnets" {
 ##-----------------------------------------------------
 module "iam-role" {
   source             = "clouddrove/iam-role/aws"
-  version            = "1.3.2"
+  version            = "1.3.3"
   name               = local.name
   environment        = local.environment
   assume_role_policy = data.aws_iam_policy_document.default.json
