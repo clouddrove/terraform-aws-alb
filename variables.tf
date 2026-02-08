@@ -450,3 +450,4 @@ variable "ipv6_cidr_blocks" {
   default     = ["::/0"]
   description = "Enable to create egress rule"
 }
+
