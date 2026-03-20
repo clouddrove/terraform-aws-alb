@@ -87,16 +87,18 @@ module "ec2" {
   ssh_allowed_ports           = [22]
   public_key                  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCmPuPTJ58AMvweGBuAqKX+tkb0ylYq5k6gPQnl6+ivQ8i/jsUJ+juI7q/7vSoTpd0k9Gv7DkjGWg1527I+LJeropVSaRqwDcrnuM1IfUCu0QdRoU8e0sW7kQGnwObJhnRcxiGPa1inwnneq9zdXK8BGgV2E4POKdwbEBlmjZmW8j4JMnCsLvZ4hxBjZB/3fnvHhn7UCqd2C6FhOz9k+aK2kxXHxdDdO9BzKqtvm5dSAxHhw6nDHSU+cHupjiiY/SvmFH0QpR5Fn1kyZH7DxV4D8R"
   instance_count              = 2
-  ami                         = "ami-01dd271720c1ba44f"
-  instance_type               = "t2.nano"
-  monitoring                  = true
-  tenancy                     = "default"
+  instance_configuration      = {
+    ami                         = "ami-01dd271720c1ba44f"
+    instance_type               = "t2.nano"
+    tenancy                     = "default"
+    monitoring                  = false
+    associate_public_ip_address = true
+    ebs_optimized               = false
+  } 
   subnet_ids                  = tolist(module.public_subnets.public_subnet_id)
   iam_instance_profile        = module.iam-role.name
   assign_eip_address          = true
-  associate_public_ip_address = true
   instance_profile_enabled    = true
-  ebs_optimized               = false
   ebs_volume_enabled          = true
   ebs_volume_type             = "gp2"
   ebs_volume_size             = 30
