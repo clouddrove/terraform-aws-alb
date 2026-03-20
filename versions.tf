@@ -8,4 +8,8 @@ terraform {
       version = ">= 5.31.0"
     }
   }
+
+  provider_meta "aws" {
+    module_name = "clouddrove/terraform-aws-alb"
+  }
 }
