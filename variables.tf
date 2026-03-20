@@ -6,7 +6,7 @@ variable "name" {
   description = "Name  (e.g. `app` or `cluster`)."
 }
 
-variable "extra_tags" {
+variable "tags" {
   type        = map(string)
   default     = {}
   description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
