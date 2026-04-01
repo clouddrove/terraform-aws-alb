@@ -12,6 +12,7 @@ jobs:
       working_directory: './example/alb/'
       provider: aws
       enable_plan: true
+      show_plan: false
     secrets:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
   nlb:
@@ -21,6 +22,7 @@ jobs:
       working_directory: './example/nlb/'
       provider: aws
       enable_plan: true
+      show_plan: false
     secrets:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
   clb:
@@ -30,6 +32,7 @@ jobs:
       working_directory: './example/clb/'
       provider: aws
       enable_plan: true
+      show_plan: false
     secrets:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
 ...
