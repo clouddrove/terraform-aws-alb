@@ -234,7 +234,7 @@ resource "aws_lb_listener" "nhttp" {
 ##-----------------------------------------------------------------------------
 resource "aws_lb_target_group" "main" {
   count                              = var.enable && var.with_target_group ? length(var.target_groups) : 0
-  name                               = format("%s-%s", module.labels.id, count.index)
+  name                               = lookup(var.target_groups[count.index], "name", format("%s-%s", module.labels.id, count.index))
   port                               = lookup(var.target_groups[count.index], "backend_port", null)
   protocol                           = lookup(var.target_groups[count.index], "backend_protocol", null) != null ? upper(lookup(var.target_groups[count.index], "backend_protocol")) : null
   vpc_id                             = var.vpc_id
