@@ -8,4 +8,7 @@ terraform {
       version = ">= 5.31.0"
     }
   }
+  provider_meta "aws" {
+    user_agent = ["github.com/clouddrove/terraform-aws-alb"]
+  }
 }
