@@ -8,5 +8,5 @@ jobs:
     secrets:
       GITHUB: ${{ secrets.GITHUB }}
     with:
-      tfcheck: 'alb / Check code format'
+      tfcheck: 'alb / 🌎 Terraform Full Checks (max)'
 ...
