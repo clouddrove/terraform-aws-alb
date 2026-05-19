@@ -11,14 +11,17 @@ jobs:
     with:
       working_directory: './example/alb/'
       provider: none
+      terraform_version: 1.10.0
   nlb:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
       working_directory: './example/nlb/'
       provider: none
+      terraform_version: 1.10.0
   clb:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
       working_directory: './example/clb/'
       provider: none
+      terraform_version: 1.10.0
 ...
