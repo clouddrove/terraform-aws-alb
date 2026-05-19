@@ -3,12 +3,13 @@
 ##-----------------------------------------------------------------------------
 module "labels" {
   source      = "clouddrove/labels/aws"
-  version     = "1.3.0"
+  version     = "1.3.1"
   name        = var.name
   repository  = var.repository
   environment = var.environment
   managedby   = var.managedby
   label_order = var.label_order
+  extra_tags  = var.tags
 }
 
 ##------------------------------------------------------------------------------
@@ -171,6 +172,7 @@ resource "aws_lb_listener" "https" {
       }
     }
   }
+  tags = module.labels.tags
 }
 
 ##-----------------------------------------------------------------------------
@@ -192,6 +194,7 @@ resource "aws_lb_listener" "http" {
       status_code = var.status_code
     }
   }
+  tags = module.labels.tags
 }
 
 ##-----------------------------------------------------------------------------
@@ -210,6 +213,7 @@ resource "aws_lb_listener" "nhttps" {
     target_group_arn = aws_lb_target_group.main[lookup(var.https_listeners[count.index], "target_group_index", count.index)].id
     type             = "forward"
   }
+  tags = module.labels.tags
 }
 
 ##-----------------------------------------------------------------------------
@@ -226,6 +230,7 @@ resource "aws_lb_listener" "nhttp" {
     target_group_arn = aws_lb_target_group.main[lookup(var.http_tcp_listeners[count.index], "target_group_index", count.index)].id
     type             = "forward"
   }
+  tags = module.labels.tags
 }
 
 ##-----------------------------------------------------------------------------
@@ -272,6 +277,7 @@ resource "aws_lb_target_group" "main" {
       type            = lookup(stickiness.value, "type", null)
     }
   }
+  tags = module.labels.tags
 }
 
 ##-----------------------------------------------------------------------------
