@@ -9,16 +9,16 @@ jobs:
   alb:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
-      working_directory: './_example/alb/'
+      working_directory: './example/alb/'
       provider: none
   nlb:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
-      working_directory: './_example/nlb/'
+      working_directory: './example/nlb/'
       provider: none
   clb:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
-      working_directory: './_example/clb/'
+      working_directory: './example/clb/'
       provider: none
 ...
