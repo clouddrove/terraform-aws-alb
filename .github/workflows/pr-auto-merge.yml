@@ -1,0 +1,12 @@
+---
+name: Auto merge
+on:
+  pull_request:
+jobs:
+  auto-merge:
+    uses: clouddrove/github-shared-workflows/.github/workflows/pr-auto-merge.yml@v2
+    secrets:
+      GITHUB: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      tfcheck: 'alb / 🌎 Terraform Full Checks (max)'
+...
