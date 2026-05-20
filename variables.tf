@@ -456,3 +456,26 @@ variable "ipv6_cidr_blocks" {
   default     = ["::/0"]
   description = "Enable to create egress rule"
 }
+
+variable "enable_zonal_shift" {
+  type        = bool
+  default     = false
+  description = "Enable zonal shift for automatic AZ failover (provider >= 5.53)."
+}
+
+variable "connection_logs" {
+  type        = map(string)
+  default     = {}
+  description = "Connection logs config: bucket (required), prefix (optional), enabled (optional, default true)."
+}
+
+variable "mutual_authentication" {
+  type = object({
+    mode                             = string
+    trust_store_arn                  = optional(string)
+    ignore_client_certificate_expiry = optional(bool)
+    advertise_trust_store_ca_names   = optional(string)
+  })
+  default     = null
+  description = "mTLS config for HTTPS listener. mode: off | passthrough | verify."
+}
