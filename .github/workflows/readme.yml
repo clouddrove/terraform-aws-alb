@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-      - feat/readme-test
     paths-ignore:
       - 'README.md'
       - 'docs/**'
