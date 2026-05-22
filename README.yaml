@@ -26,7 +26,8 @@ badges:
     url: "LICENSE.md"
 
 prerequesties:
-  - name: Terraform 1.5.3
+  - name: Terraform
+    version: 1.5.3
     url: https://learn.hashicorp.com/terraform/getting-started/install.html
 #  description of this project
 description: |-
