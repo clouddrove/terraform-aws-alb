@@ -88,6 +88,7 @@ resource "aws_lb" "main" {
   desync_mitigation_mode                      = var.desync_mitigation_mode
   xff_header_processing_mode                  = var.xff_header_processing_mode
   ip_address_type                             = var.ip_address_type
+  enable_zonal_shift                          = var.enable_zonal_shift
   tags                                        = module.labels.tags
   drop_invalid_header_fields                  = true
 
@@ -104,6 +105,16 @@ resource "aws_lb" "main" {
       enabled = try(access_logs.value.enabled, try(access_logs.value.bucket, null) != null)
       bucket  = try(access_logs.value.bucket, null)
       prefix  = try(access_logs.value.prefix, null)
+    }
+  }
+
+  dynamic "connection_logs" {
+    for_each = length(var.connection_logs) > 0 ? [var.connection_logs] : []
+
+    content {
+      bucket  = connection_logs.value.bucket
+      enabled = try(connection_logs.value.enabled, true)
+      prefix  = try(connection_logs.value.prefix, null)
     }
   }
 
@@ -131,6 +142,18 @@ resource "aws_lb_listener" "https" {
   protocol          = var.listener_protocol
   ssl_policy        = var.ssl_policy
   certificate_arn   = var.listener_certificate_arn
+
+  dynamic "mutual_authentication" {
+    for_each = var.mutual_authentication != null ? [var.mutual_authentication] : []
+
+    content {
+      mode                             = mutual_authentication.value.mode
+      trust_store_arn                  = try(mutual_authentication.value.trust_store_arn, null)
+      ignore_client_certificate_expiry = try(mutual_authentication.value.ignore_client_certificate_expiry, null)
+      advertise_trust_store_ca_names   = try(mutual_authentication.value.advertise_trust_store_ca_names, null)
+    }
+  }
+
   default_action {
     target_group_arn = join("", aws_lb_target_group.main[*].arn)
     type             = var.listener_type
@@ -238,7 +261,7 @@ resource "aws_lb_listener" "nhttp" {
 ##-----------------------------------------------------------------------------
 resource "aws_lb_target_group" "main" {
   count                              = var.enable && var.with_target_group ? length(var.target_groups) : 0
-  name                               = format("%s-%s", module.labels.id, count.index)
+  name                               = lookup(var.target_groups[count.index], "name", format("%s-%s", module.labels.id, count.index))
   port                               = lookup(var.target_groups[count.index], "backend_port", null)
   protocol                           = lookup(var.target_groups[count.index], "backend_protocol", null) != null ? upper(lookup(var.target_groups[count.index], "backend_protocol")) : null
   vpc_id                             = var.vpc_id
