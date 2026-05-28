@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v2.0.2] - 2026-05-28
+### :sparkles: New Features
+- [`77e17d9`](https://github.com/clouddrove/terraform-aws-alb/commit/77e17d9553054b50d42405942f9d244b2a59ae1b) - add tags to load balancer listeners and target group *(PR [#113](https://github.com/clouddrove/terraform-aws-alb/pull/113) by [@vineetbavniya-cd](https://github.com/vineetbavniya-cd))*
+- [`63be212`](https://github.com/clouddrove/terraform-aws-alb/commit/63be21228b65fc10b471580c586520e08182636d) - changed provider meta *(PR [#124](https://github.com/clouddrove/terraform-aws-alb/pull/124) by [@chetankesare-cd](https://github.com/chetankesare-cd))*
+- [`f6ec843`](https://github.com/clouddrove/terraform-aws-alb/commit/f6ec843e247d25374d4dd4638a8e6b1593e1e8f3) - add zonal-shift, connection-logs, mTLS and bump provider constraint *(PR [#127](https://github.com/clouddrove/terraform-aws-alb/pull/127) by [@clouddrove-ci](https://github.com/clouddrove-ci))*
+
+### :bug: Bug Fixes
+- [`73353fd`](https://github.com/clouddrove/terraform-aws-alb/commit/73353fdb074372ee5bbf7aea8b33b40fcb6f0dcd) - update automerge tfcheck to match actual CI check names *(PR [#117](https://github.com/clouddrove/terraform-aws-alb/pull/117) by [@clouddrove-ci](https://github.com/clouddrove-ci))*
+- [`d67a924`](https://github.com/clouddrove/terraform-aws-alb/commit/d67a924f6e54c7b1d7b548d1d268f84c166da144) - honor user-provided name key in target_groups ([#122](https://github.com/clouddrove/terraform-aws-alb/pull/122)) *(PR [#123](https://github.com/clouddrove/terraform-aws-alb/pull/123) by [@anmolnagpal](https://github.com/anmolnagpal))*
+  - :arrow_lower_right: *fixes issue [#122](https://github.com/clouddrove/terraform-aws-alb/issues/122) opened by [@anmol-reedai](https://github.com/anmol-reedai)*
+
+### :wrench: Chores
+- [`736c25a`](https://github.com/clouddrove/terraform-aws-alb/commit/736c25a9fd2c8c24f49c23905c65bc4ccdd866c6) - update pull request template for improved clarity and structure *(PR [#119](https://github.com/clouddrove/terraform-aws-alb/pull/119) by [@vineetbavniya-cd](https://github.com/vineetbavniya-cd))*
+- [`66a9b73`](https://github.com/clouddrove/terraform-aws-alb/commit/66a9b732c6cb3aca3f66850f17e69014177ea767) - add security policy and standardize pre-commit and release config *(PR [#111](https://github.com/clouddrove/terraform-aws-alb/pull/111) by [@anmolnagpal](https://github.com/anmolnagpal))*
+
+
 ## [2.0.0] - 2023-09-11
 ### :sparkles: New Features
 - [`fe85eaa`](https://github.com/clouddrove/terraform-aws-alb/commit/fe85eaa4683fd49557af8f9d7fa4dc504fa809f3) - updated changelog.yml name and file *(commit by [@vibhutigoyal](https://github.com/vibhutigoyal))*
@@ -126,3 +142,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [1.0.2]: https://github.com/clouddrove/terraform-aws-alb/compare/1.0.2...master
 [1.3.0]: https://github.com/clouddrove/terraform-aws-alb/compare/1.3.0...master
 [2.0.0]: https://github.com/clouddrove/terraform-aws-alb/compare/1.3.0...2.0.0
+[v2.0.2]: https://github.com/clouddrove/terraform-aws-alb/compare/v2.0.1...v2.0.2
