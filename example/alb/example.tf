@@ -123,10 +123,10 @@ module "acm_secondary" {
   name        = local.name
   environment = local.environment
 
-  enable_aws_certificate    = true
-  domain_name               = "test.clouddrove.ca"
-  validation_method         = "DNS"
-  enable_dns_validation     = false
+  enable_aws_certificate = true
+  domain_name            = "test.clouddrove.ca"
+  validation_method      = "DNS"
+  enable_dns_validation  = false
 }
 
 ##-----------------------------------------------------------------------------
