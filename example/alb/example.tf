@@ -1,9 +1,9 @@
 provider "aws" {
-  region = "eu-west-1"
+  region = "us-west-2"
 }
 
 locals {
-  name        = "alb"
+  name        = "alb-harsh"
   environment = "test"
 }
 
@@ -28,7 +28,7 @@ module "public_subnets" {
 
   name               = local.name
   environment        = local.environment
-  availability_zones = ["eu-west-1b", "eu-west-1c"]
+  availability_zones = ["us-west-2b", "us-west-2c"]
   type               = "public"
   vpc_id             = module.vpc.vpc_id
   cidr_block         = module.vpc.vpc_cidr_block
@@ -80,15 +80,15 @@ module "ec2" {
   source  = "clouddrove/ec2/aws"
   version = "2.0.4"
 
-  name              = local.name
+  name              = "ec2-${local.name}"
   environment       = local.environment
   vpc_id            = module.vpc.vpc_id
   ssh_allowed_ip    = ["0.0.0.0/0"]
   ssh_allowed_ports = [22]
-  public_key        = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCmPuPTJ58AMvweGBuAqKX+tkb0ylYq5k6gPQnl6+ivQ8i/jsUJ+juI7q/7vSoTpd0k9Gv7DkjGWg1527I+LJeropVSaRqwDcrnuM1IfUCu0QdRoU8e0sW7kQGnwObJhnRcxiGPa1inwnneq9zdXK8BGgV2E4POKdwbEBlmjZmW8j4JMnCsLvZ4hxBjZB/3fnvHhn7UCqd2C6FhOz9k+aK2kxXHxdDdO9BzKqtvm5dSAxHhw6nDHSU+cHupjiiY/SvmFH0QpR5Fn1kyZH7DxV4D8R"
-  instance_count    = 2
+  public_key        = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCZCFnP8yRx14RdjDDMcZPE+1i9g/o1SI/e0/mAp5ICJU5LQXwxLHeHOLMJDIejfMslJpU3QoVUUe0Hq9+fvnKWktCBoxntcSZ7vAITj1ljzWstb/0p1vSl7lg+dclyWWPF9E8GvoVIElwPFpKBhSzrRQKHKJCvRFsyRqdQPcyT+Oz8vGoi4CHBPhk5G+1wfDB4UufecuZ7Z6diNVzelsCLNmM/yGp30qtQLWNBV0WHKOIuKxNg6xA2FvFzfizi8AgAQ/SDXEOQtflcsWSVdOHRg0aRkAbTCIZ0VW081QZHciml3K64OD307MbZ7E2oI1WDazCYqGzM2mBrWjOKg5H/RbMh+uZjgPlHhgyF3Oc8wSRKR1UJJV7LMUKW9A8blQVkmsD6M5JbZ/eQ/lYjup8VJuXupGseACBDltwqNsAwkgnf/GOldRfNqX01T3OP4YDYpHKDTH6THbiRoUqYTy/TcLXbYtVMT06VcPkxWSKbHSb+z7bXioRJU2e8IQSsHLk= harshal.lohar@CD-IN-MAC-0003.local"
+  instance_count    = 1
   instance_configuration = {
-    ami                         = "ami-01dd271720c1ba44f"
+    ami                         = "ami-096f5760b00bcd95c"
     instance_type               = "t2.nano"
     tenancy                     = "default"
     monitoring                  = false
@@ -132,11 +132,11 @@ module "alb" {
   target_id                  = module.ec2.instance_id
   vpc_id                     = module.vpc.vpc_id
   allowed_ip                 = [module.vpc.vpc_cidr_block]
-  allowed_ports              = [3306]
+  allowed_ports              = [80, 443]
   listener_certificate_arn   = module.acm.arn
   enable_deletion_protection = false
   with_target_group          = true
-  https_enabled              = true
+  https_enabled              = false
   http_enabled               = true
   https_port                 = 443
   listener_type              = "forward"
@@ -145,34 +145,40 @@ module "alb" {
   http_tcp_listeners = [
     {
       port               = 80
-      protocol           = "TCP"
+      protocol           = "HTTP"
       target_group_index = 0
-    },
-    {
-      port               = 81
-      protocol           = "TCP"
-      target_group_index = 0
-    },
+    }
   ]
   https_listeners = [
     {
       port               = 443
-      protocol           = "TLS"
-      target_group_index = 0
+      protocol           = "HTTPS"
+      target_group_index = 1
       certificate_arn    = module.acm.arn
-    },
-    {
-      port               = 84
-      protocol           = "TLS"
-      target_group_index = 0
-      certificate_arn    = module.acm.arn
-    },
+    }
   ]
 
   target_groups = [
     {
       backend_protocol     = "HTTP"
-      backend_port         = 80
+      backend_port         = 8001
+      target_type          = "instance"
+      deregistration_delay = 300
+      health_check = {
+        enabled             = true
+        interval            = 30
+        path                = "/"
+        port                = "traffic-port"
+        healthy_threshold   = 3
+        unhealthy_threshold = 3
+        timeout             = 10
+        protocol            = "HTTP"
+        matcher             = "200-399"
+      }
+    },
+    {
+      backend_protocol     = "HTTP"
+      backend_port         = 8002
       target_type          = "instance"
       deregistration_delay = 300
       health_check = {
@@ -187,6 +193,36 @@ module "alb" {
         matcher             = "200-399"
       }
     }
+  ]
+  http_tcp_listener_rules = [
+    {
+      http_listener_index = 0
+      priority            = 100
+
+      actions = [{
+        type               = "forward"
+        target_group_index = 0
+      }]
+
+      conditions = [{
+        host_headers = ["nginx.clouddrove.ca"]
+      }]
+    },
+
+    {
+      http_listener_index = 0
+      priority            = 101
+
+      actions = [{
+        type               = "forward"
+        target_group_index = 1
+      }]
+
+      conditions = [{
+        host_headers = ["apache.clouddrove.ca"]
+      }]
+    }
+
   ]
 
   extra_ssl_certs = [

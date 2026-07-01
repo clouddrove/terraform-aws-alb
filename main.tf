@@ -307,11 +307,13 @@ resource "aws_lb_target_group" "main" {
 ## For attaching resources with Elastic Load Balancer (ELB), see the aws_elb_attachment resource.
 ##-----------------------------------------------------------------------------
 resource "aws_lb_target_group_attachment" "attachment" {
-  count = var.enable && var.with_target_group && var.load_balancer_type == "application" ? length(var.target_id) : 0
+  for_each = var.load_balancer_type == "application" && var.enable && var.with_target_group ? {
+    for k, v in local.arns_targets : k => v
+  } : {}
 
-  target_group_arn = element(aws_lb_target_group.main[*].arn, count.index)
-  target_id        = element(var.target_id, count.index)
-  port             = var.target_group_port
+  target_group_arn = aws_lb_target_group.main[each.value.key].arn
+  target_id        = var.target_id[each.value.target]
+  port             = each.value.port
 }
 
 locals {
@@ -378,7 +380,7 @@ resource "aws_elb" "main" {
 resource "aws_lb_listener_rule" "http_tcp_listener_rule" {
   count = var.enable ? length(var.http_tcp_listener_rules) : 0
 
-  listener_arn = aws_lb_listener.nhttp[lookup(var.http_tcp_listener_rules[count.index], "http_tcp_listener_index", count.index)].arn
+  listener_arn = var.load_balancer_type == "application" ? aws_lb_listener.http[lookup(var.http_tcp_listener_rules[count.index], "http_tcp_listener_index", 0)].arn : aws_lb_listener.nhttp[lookup(var.http_tcp_listener_rules[count.index], "http_tcp_listener_index", 0)].arn
   priority     = lookup(var.http_tcp_listener_rules[count.index], "priority", null)
 
   # redirect actions
@@ -571,7 +573,7 @@ resource "aws_lb_listener_rule" "http_tcp_listener_rule" {
 resource "aws_lb_listener_rule" "https_listener_rule" {
   count = var.enable ? length(var.https_listener_rules) : 0
 
-  listener_arn = aws_lb_listener.nhttps[lookup(var.https_listener_rules[count.index], "https_listener_index", count.index)].arn
+  listener_arn = var.load_balancer_type == "application" ? aws_lb_listener.https[lookup(var.https_listener_rules[count.index], "https_listener_index", 0)].arn : aws_lb_listener.nhttps[lookup(var.https_listener_rules[count.index], "https_listener_index", 0)].arn
   priority     = lookup(var.https_listener_rules[count.index], "priority", null)
 
   # authenticate-cognito actions
