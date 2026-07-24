@@ -104,7 +104,7 @@ module "ec2" {
   ebs_volume_size          = 30
 }
 
-module "acm" {
+module "acm_primary" {
   source      = "clouddrove/acm/aws"
   version     = "1.4.1"
   name        = local.name
@@ -115,6 +115,18 @@ module "acm" {
   subject_alternative_names = ["*.clouddrove.ca"]
   validation_method         = "DNS"
   enable_dns_validation     = false
+}
+
+module "acm_secondary" {
+  source      = "clouddrove/acm/aws"
+  version     = "1.4.1"
+  name        = local.name
+  environment = local.environment
+
+  enable_aws_certificate = true
+  domain_name            = "test.clouddrove.ca"
+  validation_method      = "DNS"
+  enable_dns_validation  = false
 }
 
 ##-----------------------------------------------------------------------------
@@ -133,7 +145,7 @@ module "alb" {
   vpc_id                     = module.vpc.vpc_id
   allowed_ip                 = [module.vpc.vpc_cidr_block]
   allowed_ports              = [3306]
-  listener_certificate_arn   = module.acm.arn
+  listener_certificate_arn   = module.acm_primary.arn
   enable_deletion_protection = false
   with_target_group          = true
   https_enabled              = true
@@ -147,26 +159,15 @@ module "alb" {
       port               = 80
       protocol           = "TCP"
       target_group_index = 0
-    },
-    {
-      port               = 81
-      protocol           = "TCP"
-      target_group_index = 0
-    },
+    }
   ]
   https_listeners = [
     {
       port               = 443
       protocol           = "TLS"
       target_group_index = 0
-      certificate_arn    = module.acm.arn
-    },
-    {
-      port               = 84
-      protocol           = "TLS"
-      target_group_index = 0
-      certificate_arn    = module.acm.arn
-    },
+      certificate_arn    = module.acm_primary.arn
+    }
   ]
 
   target_groups = [
@@ -192,7 +193,7 @@ module "alb" {
   extra_ssl_certs = [
     {
       https_listener_index = 0
-      certificate_arn      = module.acm.arn
+      certificate_arn      = module.acm_secondary.arn
     }
   ]
 }
