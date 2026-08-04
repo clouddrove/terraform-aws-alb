@@ -1,26 +1,16 @@
-output "arn" {
-  value       = module.alb[*].arn
-  description = "The ARN of the ALB."
-}
-
-output "dns_name" {
+output "alb_dns_name" {
   value       = module.alb.dns_name
-  description = "The DNS name of the load balancer."
+  description = "DNS name of the ALB."
 }
 
-output "zone_id" {
-  value       = module.alb.zone_id
-  description = "The zone_id of the load balancer to assist with creating DNS records."
-}
-
-output "tags" {
-  value       = module.alb.tags
-  description = "A mapping of tags to assign to the alb."
+output "alb_url" {
+  value       = "http://${module.alb.dns_name}"
+  description = "HTTP URL of the ALB."
 }
 
 output "main_target_group_arn" {
-  value       = module.alb[*].main_target_group_arn
-  description = "The ARN of the shared target group (Apache + Nginx)."
+  value       = module.alb.main_target_group_arn
+  description = "ARN of the shared target group."
 }
 
 output "apache_instance_id" {
@@ -31,4 +21,9 @@ output "apache_instance_id" {
 output "nginx_instance_id" {
   value       = module.ec2_nginx.instance_id
   description = "Instance ID of the Nginx EC2 instance."
+}
+
+output "key_pair_name" {
+  value       = module.keypair.name
+  description = "Name of the generated SSH key pair."
 }

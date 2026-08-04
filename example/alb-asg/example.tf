@@ -10,7 +10,7 @@ locals {
 
 ##---------------------------------------------------------------------------------------------------------------------------
 ## A VPC is a virtual network that closely resembles a traditional network that you'd operate in your own data center.
-##---------------------------------------------------------------------------------------------------------------------------
+##--------------------------------------------------------------------------------------------------------------------------
 module "vpc" {
   source  = "clouddrove/vpc/aws"
   version = "2.0.5"
@@ -20,9 +20,9 @@ module "vpc" {
   cidr_block  = "172.16.0.0/16"
 }
 
-##-----------------------------------------------------
-## A subnet is a range of IP addresses in your VPC.
-##-----------------------------------------------------
+##-----------------------------------
+## Public subnets across two AZs
+##-----------------------------------
 module "public_subnets" {
   source  = "clouddrove/subnet/aws"
   version = "2.0.2"
@@ -37,11 +37,9 @@ module "public_subnets" {
   ipv6_cidr_block    = module.vpc.ipv6_cidr_block
 }
 
-##-----------------------------------------------------
-## IAM role for EC2 instances.
-## Uses the AWS-managed AmazonSSMManagedInstanceCore policy
-## so Session Manager access works without a custom inline policy.
-##-----------------------------------------------------
+##-----------------------------------------------------------------------
+## IAM role with SSM managed policy — enables Session Manager access
+##-----------------------------------------------------------------------
 module "iam-role" {
   source  = "clouddrove/iam-role/aws"
   version = "1.4.0"
@@ -50,7 +48,6 @@ module "iam-role" {
   environment        = local.environment
   assume_role_policy = data.aws_iam_policy_document.default.json
   policy_enabled     = false
-
   managed_policy_arns = [
     "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
   ]
@@ -67,53 +64,67 @@ data "aws_iam_policy_document" "default" {
   }
 }
 
-resource "aws_iam_instance_profile" "asg" {
-  name = "${local.name}-${local.environment}-asg-profile"
-  role = module.iam-role.name
-}
+##-----------------------------------------------------------------------
+## ALB security group — allows HTTP :80 from internet
+##-----------------------------------------------------------------------
+module "sg_alb" {
+  source  = "clouddrove/security-group/aws"
+  version = "2.0.3"
 
-##-----------------------------------------------------
-## Security group for ASG instances.
-## Allows HTTP only from the ALB security group.
-## Public egress is required for apt package installation
-## and SSM endpoint communication (instances use public IPs,
-## no NAT Gateway needed).
-##-----------------------------------------------------
-resource "aws_security_group" "asg" {
-  name        = "${local.name}-${local.environment}-asg-sg"
-  description = "Allow HTTP from ALB and all egress."
+  name        = "${local.name}-alb"
+  environment = local.environment
   vpc_id      = module.vpc.vpc_id
 
-  tags = {
-    Name        = "${local.name}-${local.environment}-asg-sg"
-    Environment = local.environment
-  }
+  new_sg_ingress_rules = [{
+    key         = "http-public"
+    ip_protocol = "tcp"
+    from_port   = 80
+    to_port     = 80
+    cidr_ipv4   = "0.0.0.0/0"
+    description = "Allow HTTP from internet."
+  }]
+
+  #tfsec:ignore:aws-ec2-no-public-egress-sgr
+  new_sg_egress_rules = [{
+    key         = "all-outbound"
+    ip_protocol = "-1"
+    cidr_ipv4   = "0.0.0.0/0"
+    description = "Allow all outbound."
+  }]
 }
 
-resource "aws_security_group_rule" "asg_http_from_alb" {
-  description              = "Allow HTTP from ALB security group."
-  type                     = "ingress"
-  from_port                = 80
-  to_port                  = 80
-  protocol                 = "tcp"
-  source_security_group_id = module.alb.security_group_id
-  security_group_id        = aws_security_group.asg.id
+##-----------------------------------------------------------------------
+## ASG security group — allows HTTP :80 only from the ALB security group
+##-----------------------------------------------------------------------
+module "sg_asg" {
+  source  = "clouddrove/security-group/aws"
+  version = "2.0.3"
+
+  name        = "${local.name}-asg"
+  environment = local.environment
+  vpc_id      = module.vpc.vpc_id
+
+  new_sg_ingress_rules = [{
+    key                          = "http-from-alb"
+    ip_protocol                  = "tcp"
+    from_port                    = 80
+    to_port                      = 80
+    referenced_security_group_id = module.sg_alb.security_group_id
+    description                  = "Allow HTTP from ALB security group."
+  }]
+
+  #tfsec:ignore:aws-ec2-no-public-egress-sgr
+  new_sg_egress_rules = [{
+    key         = "all-outbound"
+    ip_protocol = "-1"
+    cidr_ipv4   = "0.0.0.0/0"
+    description = "Allow all outbound."
+  }]
 }
 
-resource "aws_security_group_rule" "asg_egress" {
-  description       = "Allow all egress."
-  type              = "egress"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.asg.id
-}
-
-##-----------------------------------------------------
-## Fetch the latest Ubuntu 22.04 LTS AMI (x86_64).
-## the SSM Agent pre-installed on official Canonical AMIs.
-##-----------------------------------------------------
+##-----------------------------------------------------------------------------
+## Latest Ubuntu 22.04 LTS AMI — SSM Agent is pre-installed on Canonical AMIs
+##-----------------------------------------------------------------------------
 data "aws_ami" "ubuntu" {
   most_recent = true
   owners      = ["099720109477"] # Canonical
@@ -139,39 +150,36 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-##-----------------------------------------------------
-## Launch template for ASG instances.
-## - Ubuntu 22.04 LTS, t3.micro
-## - Nginx installed via user data using apt
-## - Serves instance ID so ALB load balancing is easy to verify
-## - Session Manager used for access; no SSH key pair required
-## - Instances get public IPs (public subnets, no NAT Gateway)
-##-----------------------------------------------------
-resource "aws_launch_template" "asg" {
-  name_prefix   = "${local.name}-${local.environment}-"
+##-----------------------------------------------------------------------
+## ASG — Launch Template + Auto Scaling Group managed by the module.
+## Instances register with the ALB target group via target_group_arns.
+## Access instances via Session Manager (no SSH key needed).
+##-----------------------------------------------------------------------
+module "ec2_autoscaling" {
+  source  = "clouddrove/ec2-autoscaling/aws"
+  version = "1.3.4"
+
+  name        = local.name
+  environment = local.environment
+
+  # Instance
   image_id      = data.aws_ami.ubuntu.id
   instance_type = "t3.micro"
 
-  iam_instance_profile {
-    name = aws_iam_instance_profile.asg.name
-  }
+  # IAM — module creates the instance profile; pass the role name here
+  iam_instance_profile_name = module.iam-role.name
 
-  network_interfaces {
-    associate_public_ip_address = true
-    security_groups             = [aws_security_group.asg.id]
-    delete_on_termination       = true
-  }
+  # Network — public IPs needed for apt and SSM (no NAT Gateway)
+  associate_public_ip_address = true
+  security_group_ids          = [module.sg_asg.security_group_id]
+  subnet_ids                  = tolist(module.public_subnets.public_subnet_id)
 
-  block_device_mappings {
-    device_name = "/dev/sda1"
-    ebs {
-      volume_size           = 15
-      volume_type           = "gp3"
-      delete_on_termination = true
-    }
-  }
+  # Root volume
+  volume_size = 15
+  volume_type = "gp3"
 
-  user_data = base64encode(<<-EOF
+  # User data — installs Nginx and serves the instance ID for easy ALB verification
+  user_data_base64 = base64encode(<<-EOF
     #!/bin/bash
     apt-get update -y
     apt-get install -y nginx
@@ -186,73 +194,21 @@ resource "aws_launch_template" "asg" {
   EOF
   )
 
-  tag_specifications {
-    resource_type = "instance"
-    tags = {
-      Name        = "${local.name}-${local.environment}-asg-instance"
-      Environment = local.environment
-    }
-  }
+  # ASG sizing
+  min_size         = 2
+  desired_capacity = 2
+  max_size         = 4
 
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-##-----------------------------------------------------
-## Auto Scaling Group.
-## Registers instances with the ALB target group via
-## target_group_arns — no manual aws_lb_target_group_attachment.
-##-----------------------------------------------------
-resource "aws_autoscaling_group" "asg" {
-  name                = "${local.name}-${local.environment}-asg"
-  min_size            = 2
-  max_size            = 4
-  desired_capacity    = 2
-  vpc_zone_identifier = module.public_subnets.public_subnet_id
-
-  target_group_arns = [module.alb.main_target_group_arn]
-
+  # ALB integration — ELB health checks, grace period for apt+nginx startup
+  target_group_arns         = [module.alb.main_target_group_arn]
   health_check_type         = "ELB"
   health_check_grace_period = 120
-
-  launch_template {
-    id      = aws_launch_template.asg.id
-    version = "$Latest"
-  }
-
-  instance_refresh {
-    strategy = "Rolling"
-    preferences {
-      min_healthy_percentage = 50
-    }
-  }
-
-  tag {
-    key                 = "Name"
-    value               = "${local.name}-${local.environment}-asg"
-    propagate_at_launch = false
-  }
-
-  tag {
-    key                 = "Environment"
-    value               = local.environment
-    propagate_at_launch = true
-  }
-
-  lifecycle {
-    create_before_destroy = true
-    ignore_changes        = [desired_capacity]
-  }
 }
 
-##-----------------------------------------------------------------------------
-## ALB module.
-##
-## target_id is required by the module but the ASG handles its own registration
-## via target_group_arns above. Passing an empty list disables the module's
-## aws_lb_target_group_attachment resource (count = length(target_id) = 0).
-##-----------------------------------------------------------------------------
+##----------------------------------------------------------------------------------------
+## ALB — forwards HTTP :80 to the ASG target group.
+## target_id = [] disables static attachments; ASG self-registers via target_group_arns.
+##-----------------------------------------------------------------------
 module "alb" {
   source = "./../../"
 
@@ -264,6 +220,7 @@ module "alb" {
   target_id                  = []
   subnets                    = module.public_subnets.public_subnet_id
   vpc_id                     = module.vpc.vpc_id
+  sg_ids                     = [module.sg_alb.security_group_id]
   allowed_ip                 = ["0.0.0.0/0"]
   allowed_ports              = [80]
   enable_deletion_protection = false
@@ -274,24 +231,22 @@ module "alb" {
   listener_type              = "forward"
   target_group_port          = 80
 
-  target_groups = [
-    {
-      name                 = "${local.name}-tg"
-      backend_protocol     = "HTTP"
-      backend_port         = 80
-      target_type          = "instance"
-      deregistration_delay = 60
-      health_check = {
-        enabled             = true
-        interval            = 30
-        path                = "/"
-        port                = "traffic-port"
-        healthy_threshold   = 3
-        unhealthy_threshold = 3
-        timeout             = 10
-        protocol            = "HTTP"
-        matcher             = "200-399"
-      }
-    },
-  ]
+  target_groups = [{
+    name                 = "${local.name}-tg"
+    backend_protocol     = "HTTP"
+    backend_port         = 80
+    target_type          = "instance"
+    deregistration_delay = 60
+    health_check = {
+      enabled             = true
+      interval            = 30
+      path                = "/"
+      port                = "traffic-port"
+      healthy_threshold   = 3
+      unhealthy_threshold = 3
+      timeout             = 10
+      protocol            = "HTTP"
+      matcher             = "200-399"
+    }
+  }]
 }
