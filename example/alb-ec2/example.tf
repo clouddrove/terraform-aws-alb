@@ -140,7 +140,8 @@ module "sg_ec2" {
 ## EC2 instance running Apache — user data installs and starts Apache
 ##-----------------------------------------------------------------------
 module "ec2_apache" {
-  source = "git::git@github.com:clouddrove/terraform-aws-ec2.git?ref=master"
+  source = "clouddrove/ec2/aws"
+  version = "2.1.1"
 
   name        = "${local.name}-apache"
   environment = local.environment
@@ -180,7 +181,8 @@ module "ec2_apache" {
 ## EC2 instance running Nginx — user data installs and starts Nginx
 ##-----------------------------------------------------------------------
 module "ec2_nginx" {
-  source = "git::git@github.com:clouddrove/terraform-aws-ec2.git?ref=master"
+  source = "clouddrove/ec2/aws"
+  version = "2.1.1"
 
   name        = "${local.name}-nginx"
   environment = local.environment
