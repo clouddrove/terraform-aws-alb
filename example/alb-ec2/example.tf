@@ -140,7 +140,7 @@ module "sg_ec2" {
 ## EC2 instance running Apache — user data installs and starts Apache
 ##-----------------------------------------------------------------------
 module "ec2_apache" {
-  source = "clouddrove/ec2/aws"
+  source  = "clouddrove/ec2/aws"
   version = "2.1.1"
 
   name        = "${local.name}-apache"
@@ -181,7 +181,7 @@ module "ec2_apache" {
 ## EC2 instance running Nginx — user data installs and starts Nginx
 ##-----------------------------------------------------------------------
 module "ec2_nginx" {
-  source = "clouddrove/ec2/aws"
+  source  = "clouddrove/ec2/aws"
   version = "2.1.1"
 
   name        = "${local.name}-nginx"
